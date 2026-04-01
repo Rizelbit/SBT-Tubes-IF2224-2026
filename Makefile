@@ -1,22 +1,34 @@
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+CXX      := g++
+# Tambahkan $(SRCDIR) setelah -I agar header terbaca
+CXXFLAGS := -std=c++17 -Wall -Wextra -O2 -Isrc
+TARGET   := lexer
+SRCDIR   := src
+TESTDIR  := test/milestone-1
 
-SRC = src/main.cpp src/Lexer.cpp src/Token.cpp \
-      src/Lexer_DelimsComments.cpp \
-      src/Lexer_Keywords.cpp \
-      src/Lexer_Literals.cpp \
-      src/Lexer_Operators.cpp
+# Daftar semua file sumber
+SRCS := $(SRCDIR)/main.cpp \
+        $(SRCDIR)/Token.cpp \
+        $(SRCDIR)/Lexer.cpp \
+        $(SRCDIR)/Lexer_DelimsComments.cpp \
+        $(SRCDIR)/Lexer_Keywords.cpp \
+        $(SRCDIR)/Lexer_Literals.cpp \
+        $(SRCDIR)/Lexer_Operators.cpp
 
-OBJ = $(SRC:.cpp=.o)
+OBJS := $(SRCS:.cpp=.o)
 
-lexer: $(OBJ)
-	$(CXX) $(CXXFLAGS) -o lexer $(OBJ)
+.PHONY: all clean run
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all: $(TARGET)
 
-run: lexer
-	./lexer
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+$(SRCDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# Perbaikan run: pastikan build (all) dipanggil sebelum eksekusi
+run: all
+	./$(TARGET) $(TESTDIR)/test1.txt $(TESTDIR)/output.txt
 
 clean:
-	rm -f $(OBJ) lexer
+	rm -f $(OBJS) $(TARGET)
