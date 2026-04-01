@@ -3,8 +3,8 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-    std::string inputFile  = (argc > 1) ? argv[1] : "input.txt";
-    std::string outputFile = (argc > 2) ? argv[2] : "output.txt";
+    std::string inputFile  = (argc > 1) ? argv[1] : "test/milestone-1/test1.txt";
+    std::string outputFile = (argc > 2) ? argv[2] : "test/milestone-1/output.txt";
 
     std::ofstream out(outputFile);
     if (!out.is_open()) {

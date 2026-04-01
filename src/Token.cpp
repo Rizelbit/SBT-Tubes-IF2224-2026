@@ -90,5 +90,5 @@ std::string Token::toString() const {
     if (noValue.count(type)) {
         return name;
     }
-    return name + ", " + value;
+    return name + "(" + value + ")";
 }
