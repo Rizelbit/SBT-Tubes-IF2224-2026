@@ -28,33 +28,41 @@ Token Lexer::lexLiteral() {
 		return Token(TokenType::INTCON, lexeme, startLine, startColumn);
 	}
 
-	// Single-quoted literal: CHARCON untuk karakter tunggal, STRING untuk banyak karakter.
+
 	if (currentChar == '\'') {
 		lexeme += currentChar;
 		advance();
 
 		std::string content = "";
-		while (currentChar != '\'' && currentChar != '\0' && currentChar != '\n' && currentChar != '\r') {
-			content += currentChar;
-			lexeme += currentChar;
-			advance();
-		}
-
-		if (currentChar == '\'') {
-			lexeme += currentChar;
-			advance();
-
-			if (content.size() == 1) {
-				return Token(TokenType::CHARCON, lexeme, startLine, startColumn);
+		while (true) {
+			if (currentChar == '\0' || currentChar == '\n' || currentChar == '\r') {
+				return Token(TokenType::UNKNOWN, lexeme, startLine, startColumn);
 			}
 
-			return Token(TokenType::STRING, lexeme, startLine, startColumn);
+			if (currentChar == '\'') {
+				if (peek() == '\'') {
+					lexeme += "''";
+					content += "'";
+					advance();
+					advance();
+				} else {
+					lexeme += '\'';
+					advance();
+					break;
+				}
+			} else {
+				lexeme += currentChar;
+				content += currentChar;
+				advance();
+			}
 		}
 
-		return Token(TokenType::UNKNOWN, lexeme, startLine, startColumn);
+		if (content.size() == 1) {
+			return Token(TokenType::CHARCON, content, startLine, startColumn);
+		}
+		return Token(TokenType::STRING, content, startLine, startColumn);
 	}
 
-	// Double-quoted literal selalu STRING.
 	if (currentChar == '"') {
 		lexeme += currentChar;
 		advance();

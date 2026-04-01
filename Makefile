@@ -6,7 +6,7 @@ SRCDIR   := src
 TESTDIR  := test/milestone-1
 
 # Daftar semua file sumber
-SRCS := $(SRCDIR)/main.cpp \
+SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/Token.cpp \
         $(SRCDIR)/Lexer.cpp \
         $(SRCDIR)/Lexer_DelimsComments.cpp \
