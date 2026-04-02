@@ -1,4 +1,5 @@
 # Tugas Besar IF2224 Teori Bahasa Formal dan Otomata
+![FOTO KELOMPOK](SBT_asset.png)
 ## Milestone 1: Lexical Analysis
 
 ### 1. Identitas Kelompok
@@ -39,17 +40,17 @@ Untuk mengompilasi dan menjalankan program ini, diperlukan perangkat lunak berik
 3. **Cara Menjalankan Program**
    Eksekusi *file* hasil kompilasi tersebut melalui terminal. Format dasar penjalanan program (tergantung implementasi *Command Line Arguments* pada `main.cpp`):
    ```bash
-   ./lexer <path_ke_file_input.txt> <path_ke_file_output.txt>
+   ./lexer input<nomor_test>.txt> output<nomor_test>.txt
    ```
    
    *Contoh Eksekusi Pengujian:*
    ```bash
-   ./lexer test/milestone-1/input1.txt test/milestone-1/output1.txt
+   ./lexer input1.txt output1.txt
    ```
    
 
 ### 5. Pembagian Tugas
-* **13524032 - Juan Oloando Simanungkalit (25%)**: Mengembangkan logika implementasi DFA DelimsComments (`Lexer_DelimsComments.cpp`), merancang dan menggambarkan visualisasi diagram DFA, serta menyusun keseluruhan Laporan..
+* **13524032 - Juan Oloando Simanungkalit (25%)**: Mengembangkan logika implementasi DFA DelimsComments (`Lexer_DelimsComments.cpp`), merancang dan menggambarkan visualisasi diagram DFA, serta menyusun keseluruhan Laporan.
 * **13524036 - Edward David Rumahorbo (25%)**: Mengembangkan logika implementasi DFA Operators & Komparasi (`Lexer_Operators.cpp`), merancang dan menggambarkan visualisasi diagram DFA, serta menyusun keseluruhan Laporan.
 * **13524056 - Reinhard Alfonzo Hutabarat (25%)**: Mengembangkan logika implementasi DFA Keywords (`Lexer_Keywords.cpp`), merancang dan menggambarkan visualisasi diagram DFA, serta menyusun keseluruhan Laporan.
 * **13524102 - Manuel Timothy Silalahi (25%)**: Mengembangkan logika implementasi DFA Literals (`Lexer_Literals.cpp`), merancang dan menggambarkan visualisasi diagram DFA, serta menyusun keseluruhan Laporan.
