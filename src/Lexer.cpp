@@ -20,7 +20,7 @@ Lexer::~Lexer() {
 }
 
 // ============================================================
-// Utilitas Dasar
+// Utilitas Dasar — Pure DFA (no peek)
 // ============================================================
 
 void Lexer::advance() {
@@ -36,8 +36,23 @@ void Lexer::advance() {
     }
 }
 
-char Lexer::peek() {
-    return static_cast<char>(file.peek());
+void Lexer::retract() {
+    if (currentChar == '\0') {
+        // At EOF — putback a dummy to rewind the stream, then re-read
+        file.clear();  // clear eofbit so putback/seekg works
+    }
+    file.putback(currentChar);
+
+    if (currentChar == '\n') {
+        currentLine--;
+        // Column is approximate after retract over newline — but we never
+        // retract over a newline in practice (longest-match always decides
+        // before a newline boundary).  Set to 0 as a safe fallback.
+        currentColumn = 0;
+    } else {
+        currentColumn--;
+    }
+    currentChar = '\0'; // invalidate — caller must advance() again to get valid char
 }
 
 void Lexer::skipWhitespace() {
@@ -60,43 +75,78 @@ Token Lexer::getNextToken() {
     if (std::isalpha(static_cast<unsigned char>(currentChar)) || currentChar == '_') {
         result = lexIdentifierOrKeyword();
     }
-    // 2. Cek unary minus / plus
-    else if ((currentChar == '+' || currentChar == '-') && std::isdigit(static_cast<unsigned char>(peek()))) {
-        if (currentChar == '-') {
-            bool isUnary = (prevTokenType != TokenType::IDENT &&
-                            prevTokenType != TokenType::INTCON &&
-                            prevTokenType != TokenType::REALCON &&
-                            prevTokenType != TokenType::RPARENT &&
-                            prevTokenType != TokenType::RBRACK);
-            
-            if (isUnary) {
+    // 2. Cek unary minus
+    //    '-' followed by digit: advance to consume '-', then advance to see
+    //    if next is digit.  If not a valid unary context, retract and treat
+    //    as operator.
+    else if (currentChar == '-') {
+        bool isUnary = (prevTokenType != TokenType::IDENT &&
+                        prevTokenType != TokenType::INTCON &&
+                        prevTokenType != TokenType::REALCON &&
+                        prevTokenType != TokenType::RPARENT &&
+                        prevTokenType != TokenType::RBRACK);
+        if (isUnary) {
+            // Save position, consume '-'
+            int saveLine = currentLine;
+            int saveCol  = currentColumn;
+            char saveCh  = currentChar;
+            advance(); // consume '-'
+            if (std::isdigit(static_cast<unsigned char>(currentChar))) {
+                // It IS a unary minus followed by digit → retract the digit,
+                // put '-' back as currentChar, and call lexLiteral which
+                // expects currentChar == '-'.
+                retract();            // put digit back
+                currentChar = saveCh; // restore '-' as currentChar
+                // But we already consumed '-' from the stream with the first
+                // advance, and then we retracted the digit.  We need the
+                // stream positioned right AFTER the '-' so that when
+                // lexLiteral does advance() it gets the digit.
+                // Actually: retract() put the digit back.  The '-' was
+                // consumed by the first advance().  So the stream is now:
+                //   stream → [digit] [rest...]
+                // We set currentChar = '-' so lexLiteral sees '-' and
+                // on its advance() it will get the digit.  This is correct.
+                //
+                // We also need to restore line/col to the '-' position.
+                currentLine = saveLine;
+                currentColumn = saveCol;
                 result = lexLiteral();
             } else {
+                // Not a digit after '-', so '-' is an operator.
+                // Retract whatever we just read, restore '-'.
+                retract();
+                currentChar = saveCh;
+                currentLine = saveLine;
+                currentColumn = saveCol;
                 result = lexOperator();
             }
         } else {
             result = lexOperator();
         }
     }
-    // 3. Literal angka, karakter, string
-    else if (std::isdigit(static_cast<unsigned char>(currentChar)) ||
-        currentChar == '\'' || currentChar == '"') {
-        result = lexLiteral();
-    }
-    // 4. Delimiter & Komentar
-    else if (currentChar == '(' || currentChar == ')' ||
-        currentChar == '[' || currentChar == ']' ||
-        currentChar == ',' || currentChar == ';' ||
-        currentChar == '.' || currentChar == '{') {
-        result = lexDelimiterOrComment();
-    }
-    // 5. Operator
-    else if (currentChar == '+' || currentChar == '-' || currentChar == '*' ||
-        currentChar == '/' || currentChar == '=' || currentChar == '<' ||
-        currentChar == '>' || currentChar == ':') {
+    // 3. '+' is always an operator (per parity rule)
+    else if (currentChar == '+') {
         result = lexOperator();
     }
-    // 6. Karakter ilegal
+    // 4. Literal angka, karakter, string
+    else if (std::isdigit(static_cast<unsigned char>(currentChar)) ||
+             currentChar == '\'' || currentChar == '"') {
+        result = lexLiteral();
+    }
+    // 5. Delimiter & Komentar
+    else if (currentChar == '(' || currentChar == ')' ||
+             currentChar == '[' || currentChar == ']' ||
+             currentChar == ',' || currentChar == ';' ||
+             currentChar == '.' || currentChar == '{') {
+        result = lexDelimiterOrComment();
+    }
+    // 6. Operator
+    else if (currentChar == '*' || currentChar == '/' ||
+             currentChar == '=' || currentChar == '<' ||
+             currentChar == '>' || currentChar == ':') {
+        result = lexOperator();
+    }
+    // 7. Karakter ilegal
     else {
         int errLine = currentLine;
         int errCol  = currentColumn;
