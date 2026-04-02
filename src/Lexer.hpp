@@ -13,19 +13,12 @@ private:
     int currentLine;
     int currentColumn;
 
-    // ====================================================================
-    // FUNGSI UTILITAS DASAR (Pure DFA — no peek())
-    // ====================================================================
     void advance();
     void retract();
     void skipWhitespace();
 
     TokenType prevTokenType = TokenType::UNKNOWN;
 
-    // ====================================================================
-    // FUNGSI PEMBANTU DFA
-    // ====================================================================
-    
     Token lexLiteral(); 
 
     Token lexOperator(); 

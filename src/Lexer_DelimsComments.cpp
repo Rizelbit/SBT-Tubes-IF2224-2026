@@ -5,7 +5,7 @@ Token Lexer::lexDelimiterOrComment() {
     int startColumn = currentColumn;
 
     if (currentChar == '(') {
-        advance();  // consume '('
+        advance();
 
         if (currentChar == '*') {
             advance();
