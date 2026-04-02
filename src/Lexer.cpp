@@ -1,6 +1,5 @@
 #include "Lexer.hpp"
 #include <cctype>
-#include <stdexcept>
 
 // ============================================================
 // Constructor & Destructor
@@ -48,10 +47,6 @@ void Lexer::skipWhitespace() {
     }
 }
 
-// ============================================================
-// getNextToken — dispatcher utama
-// ============================================================
-
 Token Lexer::getNextToken() {
     skipWhitespace();
 
@@ -59,47 +54,63 @@ Token Lexer::getNextToken() {
         return Token(TokenType::END_OF_FILE, "", currentLine, currentColumn);
     }
 
-    // Identifier / Keyword
+    Token result(TokenType::UNKNOWN, "", 0, 0);
+
+    // 1. Identifier / Keyword
     if (std::isalpha(static_cast<unsigned char>(currentChar)) || currentChar == '_') {
-        return lexIdentifierOrKeyword();
+        result = lexIdentifierOrKeyword();
     }
-
-    // Literal angka, karakter, string
-    if (std::isdigit(static_cast<unsigned char>(currentChar)) ||
+    // 2. Cek unary minus / plus
+    else if ((currentChar == '+' || currentChar == '-') && std::isdigit(static_cast<unsigned char>(peek()))) {
+        if (currentChar == '-') {
+            bool isUnary = (prevTokenType != TokenType::IDENT &&
+                            prevTokenType != TokenType::INTCON &&
+                            prevTokenType != TokenType::REALCON &&
+                            prevTokenType != TokenType::RPARENT &&
+                            prevTokenType != TokenType::RBRACK);
+            
+            if (isUnary) {
+                result = lexLiteral();
+            } else {
+                result = lexOperator();
+            }
+        } else {
+            result = lexOperator();
+        }
+    }
+    // 3. Literal angka, karakter, string
+    else if (std::isdigit(static_cast<unsigned char>(currentChar)) ||
         currentChar == '\'' || currentChar == '"') {
-        return lexLiteral();
+        result = lexLiteral();
     }
-
-    // Delimiter & Komentar: ( ) [ ] , ; . { (* *)
-    if (currentChar == '(' || currentChar == ')' ||
+    // 4. Delimiter & Komentar
+    else if (currentChar == '(' || currentChar == ')' ||
         currentChar == '[' || currentChar == ']' ||
         currentChar == ',' || currentChar == ';' ||
         currentChar == '.' || currentChar == '{') {
-        return lexDelimiterOrComment();
+        result = lexDelimiterOrComment();
     }
-
-    // Operator: + - * / = < > :
-    if (currentChar == '+' || currentChar == '-' || currentChar == '*' ||
+    // 5. Operator
+    else if (currentChar == '+' || currentChar == '-' || currentChar == '*' ||
         currentChar == '/' || currentChar == '=' || currentChar == '<' ||
         currentChar == '>' || currentChar == ':') {
-        return lexOperator();
+        result = lexOperator();
+    }
+    // 6. Karakter ilegal
+    else {
+        int errLine = currentLine;
+        int errCol  = currentColumn;
+        char bad    = currentChar;
+        advance();
+        result = Token(TokenType::UNKNOWN, "Unknown character '" + std::string(1, bad) + "'", errLine, errCol);
     }
 
-    // Karakter ilegal
-    int errLine = currentLine;
-    int errCol  = currentColumn;
-    char bad    = currentChar;
-    advance();
-    throw std::runtime_error(
-        "Lexical Error at Line " + std::to_string(errLine) +
-        ", Col " + std::to_string(errCol) +
-        ": Unknown character '" + bad + "'"
-    );
-}
+    if (result.type != TokenType::COMMENT && result.type != TokenType::UNKNOWN) {
+        prevTokenType = result.type;
+    }
 
-// ============================================================
-// tokenizeAll
-// ============================================================
+    return result;
+}
 
 std::vector<Token> Lexer::tokenizeAll() {
     std::vector<Token> tokens;

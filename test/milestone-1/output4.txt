@@ -1,0 +1,19 @@
+BEGINSY
+IDENT(a)
+BECOMES
+INTCON(-67)
+SEMICOLON
+IDENT(b)
+BECOMES
+PLUS
+INTCON(67)
+SEMICOLON
+Lexical Error at Line 4, Col 5: Unterminated comment '{'
+IDENT(b)
+BECOMES
+INTCON(7)
+SEMICOLON
+IDENT(s)
+BECOMES
+Lexical Error at Line 6, Col 10: Unterminated string
+END_OF_FILE

@@ -1,0 +1,12 @@
+program Hello-apa;
+
+my21var
+
+  a, b: integer;
+begin
+  c:=3+2*5;
+  a := 5 <= 9;
+  b := 2..3;
+  writeln('Result = ', b*);
+  d := 'v';
+end.if

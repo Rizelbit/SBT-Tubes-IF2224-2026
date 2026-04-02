@@ -26,7 +26,6 @@ $(TARGET): $(OBJS)
 $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Perbaikan run: pastikan build (all) dipanggil sebelum eksekusi
 run: all
 	./$(TARGET) $(TESTDIR)/test1.txt $(TESTDIR)/output.txt
 

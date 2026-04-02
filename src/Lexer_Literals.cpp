@@ -6,6 +6,11 @@ Token Lexer::lexLiteral() {
 	int startColumn = currentColumn;
 	std::string lexeme = "";
 
+	if (currentChar == '-') {
+        lexeme += currentChar;
+        advance();
+    }
+
 	// Number literal: INTCON (digit+) atau REALCON (digit+ '.' digit+)
 	if (std::isdigit(static_cast<unsigned char>(currentChar))) {
 		while (std::isdigit(static_cast<unsigned char>(currentChar))) {
@@ -36,7 +41,7 @@ Token Lexer::lexLiteral() {
 		std::string content = "";
 		while (true) {
 			if (currentChar == '\0' || currentChar == '\n' || currentChar == '\r') {
-				return Token(TokenType::UNKNOWN, lexeme, startLine, startColumn);
+				return Token(TokenType::UNKNOWN, "Unterminated string", startLine, startColumn);
 			}
 
 			if (currentChar == '\'') {

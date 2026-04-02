@@ -1,0 +1,7 @@
+{ top-level comment with tokens: a := 1; .. 2 }
+(* multiline
+comment with 0..9 and writeln('x')
+*)
+begin
+    x := 10;
+end.

@@ -10,25 +10,16 @@ Token Lexer::lexDelimiterOrComment() {
     // ----------------------------------------------------------------
     if (currentChar == '(') {
         if (peek() == '*') {
-            // Masuk mode komentar (*...*)
-            advance(); // konsumsi '('
-            advance(); // konsumsi '*'
+            advance(); advance(); 
 
             std::string body = "(*";
-            // DFA: terus baca sampai ketemu '*)'
             while (true) {
-                if (currentChar == '\0') {
-                    throw std::runtime_error(
-                        "Lexical Error at Line " + std::to_string(startLine) +
-                        ", Col " + std::to_string(startColumn) +
-                        ": Unterminated comment '(*'"
-                    );
+                if (currentChar == '\0' || currentChar == '\n' || currentChar == '\r') {
+                    return Token(TokenType::UNKNOWN, "Unterminated comment '(*'", startLine, startColumn);
                 }
                 if (currentChar == '*' && peek() == ')') {
-                    body += '*';
-                    advance(); // konsumsi '*'
-                    body += ')';
-                    advance(); // konsumsi ')'
+                    body += '*'; advance(); 
+                    body += ')'; advance(); 
                     break;
                 }
                 body += currentChar;
@@ -37,7 +28,6 @@ Token Lexer::lexDelimiterOrComment() {
             return Token(TokenType::COMMENT, body, startLine, startColumn);
         }
 
-        // Bukan komentar, kembalikan LPARENT
         advance();
         return Token(TokenType::LPARENT, "(", startLine, startColumn);
     }
@@ -46,16 +36,12 @@ Token Lexer::lexDelimiterOrComment() {
     // Komentar { ... }
     // ----------------------------------------------------------------
     if (currentChar == '{') {
-        advance(); // konsumsi '{'
+        advance();
         std::string body = "{";
 
         while (true) {
-            if (currentChar == '\0') {
-                throw std::runtime_error(
-                    "Lexical Error at Line " + std::to_string(startLine) +
-                    ", Col " + std::to_string(startColumn) +
-                    ": Unterminated comment '{'"
-                );
+            if (currentChar == '\0' || currentChar == '\n' || currentChar == '\r') {
+                return Token(TokenType::UNKNOWN, "Unterminated comment '{'", startLine, startColumn);
             }
             if (currentChar == '}') {
                 body += '}';
@@ -82,10 +68,6 @@ Token Lexer::lexDelimiterOrComment() {
         case ';': return Token(TokenType::SEMICOLON, ";", startLine, startColumn);
         case '.': return Token(TokenType::PERIOD,    ".", startLine, startColumn);
         default:
-            throw std::runtime_error(
-                "Lexical Error at Line " + std::to_string(startLine) +
-                ", Col " + std::to_string(startColumn) +
-                ": Unknown character '" + c + "'"
-            );
+            return Token(TokenType::UNKNOWN, "Unknown character '" + std::string(1, c) + "'", startLine, startColumn);
     }
 }

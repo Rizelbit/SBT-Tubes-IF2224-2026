@@ -1,0 +1,6 @@
+begin
+    a := -67;
+    b := +67;
+    { unterminated comment...
+    b := 7;
+    s := 'missing end

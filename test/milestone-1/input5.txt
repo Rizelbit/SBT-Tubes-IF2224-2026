@@ -1,0 +1,9 @@
+begin
+    if a <= b then c:=1;
+    if x<>0 then y:=2;
+    while i<=10 do i:=i+1;
+
+    writeln('It''s ''weird''', 'ok');
+    ch := 'a';
+    c2 := ''''; 
+end.
