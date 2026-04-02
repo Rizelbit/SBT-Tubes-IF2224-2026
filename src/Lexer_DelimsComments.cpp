@@ -1,40 +1,49 @@
 #include "Lexer.hpp"
-#include <stdexcept>
 
 Token Lexer::lexDelimiterOrComment() {
     int startLine   = currentLine;
     int startColumn = currentColumn;
 
-    // ----------------------------------------------------------------
-    // Kurung kiri: bisa LPARENT atau awal komentar (*...*)
-    // ----------------------------------------------------------------
     if (currentChar == '(') {
-        if (peek() == '*') {
-            advance(); advance(); 
+        advance();  // consume '('
+
+        if (currentChar == '*') {
+            advance();
 
             std::string body = "(*";
+
+            bool inStar = false;
+
             while (true) {
-                if (currentChar == '\0' || currentChar == '\n' || currentChar == '\r') {
+                if (currentChar == '\0') {
                     return Token(TokenType::UNKNOWN, "Unterminated comment '(*'", startLine, startColumn);
                 }
-                if (currentChar == '*' && peek() == ')') {
-                    body += '*'; advance(); 
-                    body += ')'; advance(); 
-                    break;
+
+                if (inStar) {
+                    if (currentChar == ')') {
+                        body += ')';
+                        advance();
+                        break;
+                    }
+                    inStar = false;
                 }
-                body += currentChar;
-                advance();
+
+                if (currentChar == '*') {
+                    inStar = true;
+                    body += currentChar;
+                    advance();
+                } else {
+                    body += currentChar;
+                    advance();
+                }
             }
+
             return Token(TokenType::COMMENT, body, startLine, startColumn);
         }
 
-        advance();
         return Token(TokenType::LPARENT, "(", startLine, startColumn);
     }
 
-    // ----------------------------------------------------------------
-    // Komentar { ... }
-    // ----------------------------------------------------------------
     if (currentChar == '{') {
         advance();
         std::string body = "{";
@@ -54,9 +63,6 @@ Token Lexer::lexDelimiterOrComment() {
         return Token(TokenType::COMMENT, body, startLine, startColumn);
     }
 
-    // ----------------------------------------------------------------
-    // Delimiter satu karakter
-    // ----------------------------------------------------------------
     char c = currentChar;
     advance();
 

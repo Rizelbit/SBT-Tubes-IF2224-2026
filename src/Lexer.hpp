@@ -14,10 +14,10 @@ private:
     int currentColumn;
 
     // ====================================================================
-    // FUNGSI UTILITAS DASAR 
+    // FUNGSI UTILITAS DASAR (Pure DFA — no peek())
     // ====================================================================
     void advance();
-    char peek();
+    void retract();
     void skipWhitespace();
 
     TokenType prevTokenType = TokenType::UNKNOWN;
