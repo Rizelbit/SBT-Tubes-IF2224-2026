@@ -1,5 +1,5 @@
 # Tugas Besar IF2224 Teori Bahasa Formal dan Otomata
-![FOTO KELOMPOK](SBT_asset.png)
+![FOTO KELOMPOK](SBT_assset.png)
 ## Milestone 1: Lexical Analysis
 
 ### 1. Identitas Kelompok
