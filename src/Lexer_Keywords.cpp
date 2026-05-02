@@ -10,17 +10,15 @@ Token Lexer::lexIdentifierOrKeyword() {
     int startLine = currentLine;
     int startColumn = currentColumn;
 
-    // State DFA: Terus membaca selama karakter saat ini adalah huruf atau angka 
-    while (std::isalnum(currentChar)) {
+    // biar bisa variabel snake_case
+    while (std::isalnum(static_cast<unsigned char>(currentChar)) || currentChar == '_') {
         lexeme += currentChar;
-        advance(); // Maju ke karakter berikutnya di file
+        advance();
     }
 
-    // Ubah salinan lexeme menjadi lowercase
     std::string lowerLexeme = lexeme;
     std::transform(lowerLexeme.begin(), lowerLexeme.end(), lowerLexeme.begin(), ::tolower);
 
-    // Lookup Table statis
     static const std::unordered_map<std::string, TokenType> keywordTable = {
         // Deklarasi
         {"const", TokenType::CONSTSY},
@@ -56,7 +54,6 @@ Token Lexer::lexIdentifierOrKeyword() {
         {"mod", TokenType::IMOD}
     };
 
-    // Cari string lowercase tersebut di dalam Lookup Table
     auto it = keywordTable.find(lowerLexeme);
     if (it != keywordTable.end()) {
         return Token(it->second, lexeme, startLine, startColumn);
