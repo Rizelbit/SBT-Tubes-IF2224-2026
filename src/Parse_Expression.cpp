@@ -16,7 +16,21 @@ ParseNode* Parser::parseParameterList(){
 }
 
 ParseNode* Parser::parseExpression(){
+    ParseNode* node = new ParseNode("Expression");
+    
+    // simple term di awal
+    node->addChild(parseSimpleExpression());
 
+    // jika ada operator relasi, misal =,<,>,<=,>=
+    TokenType cur = peekToken().type;
+    if (cur == TokenType::EQL || cur == TokenType::NEQ || cur == TokenType::LSS || 
+        cur == TokenType::LEQ || cur == TokenType::GTR || cur == TokenType::GEQ) {
+        
+        node->addChild(parseRelationalOperator());
+        node->addChild(parseSimpleExpression());
+    }
+
+    return node;
 }
 
 ParseNode* Parser::parseSimpleExpression(){
@@ -42,7 +56,9 @@ ParseNode* Parser::parseFactor(){
 }
 
 ParseNode* Parser::parseRelationalOperator(){
-
+    ParseNode* node = new ParseNode("RelationalOperator");
+    node->addChild(match(peekToken().type)); 
+    return node;
 }
 
 ParseNode* Parser::parseAdditiveOperator(){
