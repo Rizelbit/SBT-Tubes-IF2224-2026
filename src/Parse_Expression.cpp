@@ -36,9 +36,13 @@ ParseNode* Parser::parseRelationalOperator(){
 }
 
 ParseNode* Parser::parseAdditiveOperator(){
-
+    ParseNode* node = new ParseNode("AdditiveOperator");
+    node->addChild(match(peekToken().type)); 
+    return node;
 }
 
 ParseNode* Parser::parseMultiplicativeOperator(){
-
+    ParseNode* node = new ParseNode("MultiplicativeOperator");
+    node->addChild(match(peekToken().type));
+    return node;
 }
