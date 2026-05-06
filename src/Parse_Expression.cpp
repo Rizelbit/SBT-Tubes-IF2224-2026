@@ -24,7 +24,17 @@ ParseNode* Parser::parseSimpleExpression(){
 }
 
 ParseNode* Parser::parseTerm(){
+    ParseNode* node = new ParseNode("Term");
+    node->addChild(parseFactor());
 
+    // slama ada operator perkalian ( *, /, div, mod, AND )
+    while (peekToken().type == TokenType::TIMES || peekToken().type == TokenType::RDIV ||
+    peekToken().type == TokenType::IDIV  || peekToken().type == TokenType::IMOD || 
+    peekToken().type == TokenType::ANDSY) {
+        
+        node->addChild(parseMultiplicativeOperator());
+        node->addChild(parseFactor());
+    }
 }
 
 ParseNode* Parser::parseFactor(){
