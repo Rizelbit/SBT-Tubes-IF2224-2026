@@ -68,4 +68,7 @@ public:
     ParseNode* parseRelationalOperator();
     ParseNode* parseAdditiveOperator();
     ParseNode* parseMultiplicativeOperator();
+    ParseNode* parseVariable();// arr = []
+    ParseNode* parseIndexList();
+    ParseNode* parseComponentVariable();
 };

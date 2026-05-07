@@ -1,20 +1,20 @@
 #include "Parser.hpp"
 
 ParseNode* Parser::parseAssignmentStatement(){
-    ParseNode* node = new ParseNode("AssignmentStatement");
-    node->addChild(match(TokenType::IDENT));
+    ParseNode* node = new ParseNode("<assignment-statemen>");
+    // node->addChild(match(TokenType::IDENT));
+    node->addChild(parseVariable());
     node->addChild(match(TokenType::BECOMES)); // :=
     node->addChild(parseExpression());
     return node;
 }
 
 ParseNode* Parser::parseProcedureFunctionCall(){
-    ParseNode* node = new ParseNode("ProcedureFunctionCall");
+    ParseNode* node = new ParseNode("<procedure/function-call>");
     
     // harus diawali dengan identifier (nama fungsi atau prosedur)
     node->addChild(match(TokenType::IDENT));
     
-    // Opsional: Cek apakah ada parameter yang dikirim (ditandai dengan kurung buka)
     if (peekToken().type == TokenType::LPARENT) {
         node->addChild(match(TokenType::LPARENT));
         node->addChild(parseParameterList()); // Parse isi parameter
@@ -24,7 +24,7 @@ ParseNode* Parser::parseProcedureFunctionCall(){
     return node;
 }
 ParseNode* Parser::parseParameterList(){
-    ParseNode* node = new ParseNode("ParameterList");
+    ParseNode* node = new ParseNode("<parameter-list>");
     
     // Parsing ekspresi / argumen pertama
     node->addChild(parseExpression());
@@ -39,7 +39,7 @@ ParseNode* Parser::parseParameterList(){
 }
 
 ParseNode* Parser::parseExpression(){
-    ParseNode* node = new ParseNode("Expression");
+    ParseNode* node = new ParseNode("<expression>");
     
     // simple term di awal
     node->addChild(parseSimpleExpression());
@@ -57,7 +57,7 @@ ParseNode* Parser::parseExpression(){
 }
 
 ParseNode* Parser::parseSimpleExpression(){
-    ParseNode* node = new ParseNode("SimpleExpression");
+    ParseNode* node = new ParseNode("<simple-expression>");
     
     // Cek opsional unary sign di awal ekspresi (misal: -5 atau +10)
     TokenType cur = peekToken().type;
@@ -65,7 +65,7 @@ ParseNode* Parser::parseSimpleExpression(){
         node->addChild(match(cur));
     }
     
-    // Harus selalu ada term
+    //  term
     node->addChild(parseTerm());
     
     // Selama token berikutnya adalah additive operator (+, -, OR)
@@ -78,16 +78,22 @@ ParseNode* Parser::parseSimpleExpression(){
     
     return node;
 }
+static bool isMultiplicativeOperator(TokenType type) {
+    return type == TokenType::TIMES || 
+           type == TokenType::RDIV  ||
+           type == TokenType::IDIV  || 
+           type == TokenType::IMOD  || 
+           type == TokenType::ANDSY;
+}
 
 ParseNode* Parser::parseTerm(){
-    ParseNode* node = new ParseNode("Term");
+    ParseNode* node = new ParseNode("<term>");
+    
+    // factor
     node->addChild(parseFactor());
 
-    // slama ada operator perkalian ( *, /, div, mod, AND )
-    while (peekToken().type == TokenType::TIMES || peekToken().type == TokenType::RDIV ||
-    peekToken().type == TokenType::IDIV  || peekToken().type == TokenType::IMOD || 
-    peekToken().type == TokenType::ANDSY) {
-        
+    // (multiplicative-operator + factor)*
+    while (isMultiplicativeOperator(peekToken().type)) {
         node->addChild(parseMultiplicativeOperator());
         node->addChild(parseFactor());
     }
@@ -96,17 +102,14 @@ ParseNode* Parser::parseTerm(){
 }
 
 ParseNode* Parser::parseFactor(){
-    ParseNode* node = new ParseNode("Factor");
+    ParseNode* node = new ParseNode("<factor>");
     TokenType cur = peekToken().type;
     
-    // Jika itu adalah identifier (bisa variabel sederhana, atau pemanggilan fungsi)
     if (cur == TokenType::IDENT) {
-        // Lookahead: Jika ada kurung buka, besar kemungkinan ini pemanggilan fungsi.
         if (peekToken(1).type == TokenType::LPARENT) {
             node->addChild(parseProcedureFunctionCall());
         } else {
-            // Identifier biasa (atau bisa diperluas untuk record/array bila berlanjut)
-            node->addChild(match(TokenType::IDENT));
+            node->addChild(parseVariable());
         }
     } 
     // Literal konstanta
@@ -127,26 +130,94 @@ ParseNode* Parser::parseFactor(){
     }
     else {
         // error handling
-        std::cout << "ERROR" << std::endl;
+        reportError("Expected Factor (ident, litaral, '(' or NOT");
+        node->addChild(new ParseNode("ERROR"));
+        advToken();
     }
     
     return node;
 }
+ParseNode* Parser::parseComponentVariable() {
+    ParseNode* node = new ParseNode("<component-variable>");
+    
+    if (peekToken().type == TokenType::LBRACK) {
+        node->addChild(match(TokenType::LBRACK));
+        node->addChild(parseIndexList());
+        node->addChild(match(TokenType::RBRACK));
+    } 
+    else if (peekToken().type == TokenType::PERIOD) {
+        node->addChild(match(TokenType::PERIOD));
+        node->addChild(match(TokenType::IDENT));
+    }
+    else {
+        reportError("Expected '[' for array element or '.' for record field");
+        node->addChild(new ParseNode("ERROR"));
+        advToken();
+    }
 
+    return node;
+}
+
+ParseNode* Parser::parseIndexList(){
+    ParseNode* node = new ParseNode("<index-list>");
+    
+    // ( intcon| charcon|ident)
+    TokenType cur = peekToken().type;
+    if (cur == TokenType::INTCON || cur == TokenType::CHARCON || cur == TokenType::IDENT) {
+        node->addChild(match(cur));
+    } else {
+        reportError("Expected integer constant, character constant, or identifier as array index");
+        node->addChild(new ParseNode("ERROR"));
+        advToken();
+    }
+    
+    // +(comma + index-list )*
+    while (peekToken().type == TokenType::COMMA) {
+        node->addChild(match(TokenType::COMMA));
+        
+        cur = peekToken().type;
+        if (cur == TokenType::INTCON || cur == TokenType::CHARCON || cur == TokenType::IDENT) {
+            node->addChild(match(cur));
+        } else {
+            reportError("Expected integer constant, character constant, or identifier as array index");
+            node->addChild(new ParseNode("ERROR"));
+            advToken();
+        }
+    }
+    
+    return node;
+}
+ParseNode* Parser::parseVariable(){
+    ParseNode* node = new ParseNode("<variable>");
+    TokenType cur = peekToken().type;
+    if(cur == TokenType::IDENT){
+        node->addChild(match(cur));
+        while(peekToken().type == TokenType::LBRACK || peekToken().type == TokenType::PERIOD){
+            node->addChild(parseComponentVariable());
+        }
+    }
+    else{
+        reportError("Expected Identifier for variable");
+        node->addChild(new ParseNode("ERROR"));
+        advToken();
+    }
+    return node;
+    
+}
 ParseNode* Parser::parseRelationalOperator(){
-    ParseNode* node = new ParseNode("RelationalOperator");
-    node->addChild(match(peekToken().type)); 
+    ParseNode* node = new ParseNode("<relational-operator>");
+    node->addChild(match(peekToken().type)); // ini udah pasti eql,neq, gtr, geq, lss, leq
     return node;
 }
 
 ParseNode* Parser::parseAdditiveOperator(){
-    ParseNode* node = new ParseNode("AdditiveOperator");
-    node->addChild(match(peekToken().type)); 
+    ParseNode* node = new ParseNode("<additive-operator>");
+    node->addChild(match(peekToken().type)); // ini udah pasti plus, minus, orsy
     return node;
 }
 
 ParseNode* Parser::parseMultiplicativeOperator(){
-    ParseNode* node = new ParseNode("MultiplicativeOperator");
-    node->addChild(match(peekToken().type));
+    ParseNode* node = new ParseNode("<multiplicative-operator>");
+    node->addChild(match(peekToken().type));// ini udh psti times | rdiv | idiv | imod | andsy
     return node;
 }
