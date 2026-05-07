@@ -1,0 +1,65 @@
+<program>
+|-- <program-header>
+|   |-- PROGRAMSY
+|   |-- IDENT(Hello)
+|   L-- SEMICOLON
+|-- <declaration-part>
+|   L-- <var-declaration>
+|       |-- VARSY
+|       |-- <identifier-list>
+|       |   |-- IDENT(a)
+|       |   |-- COMMA
+|       |   L-- IDENT(b)
+|       |-- COLON
+|       |-- <type>
+|       |   L-- IDENT(integer)
+|       L-- SEMICOLON
+|-- <compound-statement>
+|   |-- BEGINSY
+|   |-- <statement-list>
+|   |   |-- <statement>
+|   |   |   L-- AssignmentStatement
+|   |   |       |-- IDENT(a)
+|   |   |       |-- BECOMES
+|   |   |       L-- Expression
+|   |   |           L-- SimpleExpression
+|   |   |               L-- Term
+|   |   |                   L-- Factor
+|   |   |                       L-- INTCON(5)
+|   |   |-- SEMICOLON
+|   |   |-- <statement>
+|   |   |   L-- AssignmentStatement
+|   |   |       |-- IDENT(b)
+|   |   |       |-- BECOMES
+|   |   |       L-- Expression
+|   |   |           L-- SimpleExpression
+|   |   |               |-- Term
+|   |   |               |   L-- Factor
+|   |   |               |       L-- IDENT(a)
+|   |   |               |-- AdditiveOperator
+|   |   |               |   L-- PLUS
+|   |   |               L-- Term
+|   |   |                   L-- Factor
+|   |   |                       L-- INTCON(10)
+|   |   |-- SEMICOLON
+|   |   |-- <statement>
+|   |   |   L-- ProcedureFunctionCall
+|   |   |       |-- IDENT(writeln)
+|   |   |       |-- LPARENT
+|   |   |       |-- ParameterList
+|   |   |       |   |-- Expression
+|   |   |       |   |   L-- SimpleExpression
+|   |   |       |   |       L-- Term
+|   |   |       |   |           L-- Factor
+|   |   |       |   |               L-- STRING(Result = )
+|   |   |       |   |-- COMMA
+|   |   |       |   L-- Expression
+|   |   |       |       L-- SimpleExpression
+|   |   |       |           L-- Term
+|   |   |       |               L-- Factor
+|   |   |       |                   L-- IDENT(b)
+|   |   |       L-- RPARENT
+|   |   |-- SEMICOLON
+|   |   L-- <statement>
+|   L-- ENDSY
+L-- PERIOD

@@ -1,7 +1,7 @@
 CXX      := g++
 # Tambahkan $(SRCDIR) setelah -I agar header terbaca
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 -Isrc
-TARGET   := lexer
+TARGET   := parser
 SRCDIR   := src
 TESTDIR  := test/milestone-1
 
@@ -12,7 +12,13 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/Lexer_DelimsComments.cpp \
         $(SRCDIR)/Lexer_Keywords.cpp \
         $(SRCDIR)/Lexer_Literals.cpp \
-        $(SRCDIR)/Lexer_Operators.cpp
+        $(SRCDIR)/Lexer_Operators.cpp \
+        $(SRCDIR)/Parser.cpp \
+        $(SRCDIR)/Parser_Core.cpp \
+        $(SRCDIR)/Parser_Declarations.cpp \
+        $(SRCDIR)/Parser_ControlFlow.cpp \
+        $(SRCDIR)/Parser_Expression.cpp \
+        $(SRCDIR)/ParseNode.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 
