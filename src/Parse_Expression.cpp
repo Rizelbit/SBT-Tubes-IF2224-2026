@@ -91,6 +91,8 @@ ParseNode* Parser::parseTerm(){
         node->addChild(parseMultiplicativeOperator());
         node->addChild(parseFactor());
     }
+
+    return node;
 }
 
 ParseNode* Parser::parseFactor(){
