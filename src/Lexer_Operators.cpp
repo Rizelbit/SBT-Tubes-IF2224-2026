@@ -28,7 +28,7 @@ Token Lexer::lexOperator() {
                 advance();
                 return Token(TokenType::EQL, "==", startLine, startColumn);
             }
-            return Token(TokenType::UNKNOWN, "=", startLine, startColumn);
+            return Token(TokenType::EQL, "=", startLine, startColumn);
         }
             
         case '<': {

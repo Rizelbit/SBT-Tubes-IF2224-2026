@@ -105,8 +105,13 @@ ParseNode* Parser::parseCaseStatement() {
     node->addChild(parseExpression());
     node->addChild(match(TokenType::OFSY));
     node->addChild(parseCaseBlock());
+    
+    if (peekToken().type == TokenType::SEMICOLON) {
+        node->addChild(match(TokenType::SEMICOLON));
+    }
+    
     node->addChild(match(TokenType::ENDSY));
-
+    
     return node;
 }
 
