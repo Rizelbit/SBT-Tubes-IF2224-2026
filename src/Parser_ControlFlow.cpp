@@ -139,7 +139,6 @@ ParseNode* Parser::parseCaseBlock() {
 
         node->addChild(match(TokenType::SEMICOLON));
         node->addChild(parseCaseBlock());
-        break;
     }
 
     return node;

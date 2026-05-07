@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 
 ParseNode* Parser::parseAssignmentStatement(){
-    ParseNode* node = new ParseNode("<assignment-statemen>");
+    ParseNode* node = new ParseNode("<assignment-statement>");
     // node->addChild(match(TokenType::IDENT));
     node->addChild(parseVariable());
     node->addChild(match(TokenType::BECOMES)); // :=

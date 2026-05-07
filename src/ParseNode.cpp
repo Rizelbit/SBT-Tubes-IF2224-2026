@@ -16,7 +16,7 @@ void ParseNode::addChild(ParseNode* child) {
 
 void ParseNode::printTree(std::ostream& out, const std::string& prefix, bool isLast, bool isRoot) const {
     if (!isRoot) {
-        out << prefix << (isLast ? "L-- " : "|-- ");
+        out << prefix << (isLast ? "└── " : "├── ");
     } else {
         out << prefix;
     }
@@ -25,7 +25,7 @@ void ParseNode::printTree(std::ostream& out, const std::string& prefix, bool isL
 
     std::string childPrefix = prefix;
     if (!isRoot) {
-        childPrefix += isLast ? "    " : "|   ";
+        childPrefix += isLast ? "    " : "│   ";
     }
 
     for (size_t i = 0;i < children.size();++i) {

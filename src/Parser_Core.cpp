@@ -65,7 +65,10 @@ ParseNode* Parser::parseStatement(){
     TokenType type = peekToken().type;
 
     if (type == TokenType::IDENT) {
-        if (peekToken(1).type == TokenType::BECOMES) {
+        TokenType nextType = peekToken(1).type;
+        if (nextType == TokenType::BECOMES || 
+            nextType == TokenType::LBRACK || 
+            nextType == TokenType::PERIOD) {
             node->addChild(parseAssignmentStatement());
         } else {
             node->addChild(parseProcedureFunctionCall());

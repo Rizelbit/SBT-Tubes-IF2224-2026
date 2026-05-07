@@ -1,65 +1,69 @@
 <program>
-|-- <program-header>
-|   |-- PROGRAMSY
-|   |-- IDENT(Hello)
-|   L-- SEMICOLON
-|-- <declaration-part>
-|   L-- <var-declaration>
-|       |-- VARSY
-|       |-- <identifier-list>
-|       |   |-- IDENT(a)
-|       |   |-- COMMA
-|       |   L-- IDENT(b)
-|       |-- COLON
-|       |-- <type>
-|       |   L-- IDENT(integer)
-|       L-- SEMICOLON
-|-- <compound-statement>
-|   |-- BEGINSY
-|   |-- <statement-list>
-|   |   |-- <statement>
-|   |   |   L-- AssignmentStatement
-|   |   |       |-- IDENT(a)
-|   |   |       |-- BECOMES
-|   |   |       L-- Expression
-|   |   |           L-- SimpleExpression
-|   |   |               L-- Term
-|   |   |                   L-- Factor
-|   |   |                       L-- INTCON(5)
-|   |   |-- SEMICOLON
-|   |   |-- <statement>
-|   |   |   L-- AssignmentStatement
-|   |   |       |-- IDENT(b)
-|   |   |       |-- BECOMES
-|   |   |       L-- Expression
-|   |   |           L-- SimpleExpression
-|   |   |               |-- Term
-|   |   |               |   L-- Factor
-|   |   |               |       L-- IDENT(a)
-|   |   |               |-- AdditiveOperator
-|   |   |               |   L-- PLUS
-|   |   |               L-- Term
-|   |   |                   L-- Factor
-|   |   |                       L-- INTCON(10)
-|   |   |-- SEMICOLON
-|   |   |-- <statement>
-|   |   |   L-- ProcedureFunctionCall
-|   |   |       |-- IDENT(writeln)
-|   |   |       |-- LPARENT
-|   |   |       |-- ParameterList
-|   |   |       |   |-- Expression
-|   |   |       |   |   L-- SimpleExpression
-|   |   |       |   |       L-- Term
-|   |   |       |   |           L-- Factor
-|   |   |       |   |               L-- STRING(Result = )
-|   |   |       |   |-- COMMA
-|   |   |       |   L-- Expression
-|   |   |       |       L-- SimpleExpression
-|   |   |       |           L-- Term
-|   |   |       |               L-- Factor
-|   |   |       |                   L-- IDENT(b)
-|   |   |       L-- RPARENT
-|   |   |-- SEMICOLON
-|   |   L-- <statement>
-|   L-- ENDSY
-L-- PERIOD
+├── <program-header>
+│   ├── PROGRAMSY
+│   ├── IDENT(Hello)
+│   └── SEMICOLON
+├── <declaration-part>
+│   └── <var-declaration>
+│       ├── VARSY
+│       ├── <identifier-list>
+│       │   ├── IDENT(a)
+│       │   ├── COMMA
+│       │   └── IDENT(b)
+│       ├── COLON
+│       ├── <type>
+│       │   └── IDENT(integer)
+│       └── SEMICOLON
+├── <compound-statement>
+│   ├── BEGINSY
+│   ├── <statement-list>
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── IDENT(a)
+│   │   │       ├── BECOMES
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── INTCON(5)
+│   │   ├── SEMICOLON
+│   │   ├── <statement>
+│   │   │   └── <assignment-statement>
+│   │   │       ├── <variable>
+│   │   │       │   └── IDENT(b)
+│   │   │       ├── BECOMES
+│   │   │       └── <expression>
+│   │   │           └── <simple-expression>
+│   │   │               ├── <term>
+│   │   │               │   └── <factor>
+│   │   │               │       └── <variable>
+│   │   │               │           └── IDENT(a)
+│   │   │               ├── <additive-operator>
+│   │   │               │   └── PLUS
+│   │   │               └── <term>
+│   │   │                   └── <factor>
+│   │   │                       └── INTCON(10)
+│   │   ├── SEMICOLON
+│   │   ├── <statement>
+│   │   │   └── <procedure/function-call>
+│   │   │       ├── IDENT(writeln)
+│   │   │       ├── LPARENT
+│   │   │       ├── <parameter-list>
+│   │   │       │   ├── <expression>
+│   │   │       │   │   └── <simple-expression>
+│   │   │       │   │       └── <term>
+│   │   │       │   │           └── <factor>
+│   │   │       │   │               └── STRING(Result = )
+│   │   │       │   ├── COMMA
+│   │   │       │   └── <expression>
+│   │   │       │       └── <simple-expression>
+│   │   │       │           └── <term>
+│   │   │       │               └── <factor>
+│   │   │       │                   └── <variable>
+│   │   │       │                       └── IDENT(b)
+│   │   │       └── RPARENT
+│   │   ├── SEMICOLON
+│   │   └── <statement>
+│   └── ENDSY
+└── PERIOD
