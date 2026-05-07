@@ -1,0 +1,24 @@
+program NestedLogic;
+
+var
+  x, y, z, total: integer;
+  status: char;
+begin
+  x := 10;
+  y := 5;
+  z := 0;
+  total := 0;
+  status := 'N';
+
+  while x > 0 do
+    z := x - y;
+    if z > 2 then total := total + z
+    else
+    if z == 0 then total := total + 1
+    else total := total - 1;
+    x := x - 1;
+    writeln('X: ', x, ' Z: ', z, ' Total: ', total, ' Status: ', status);
+    x := x - 2;
+
+  writeln('Eksekusi selesai dengan nilai akhir: ', total);
+end.

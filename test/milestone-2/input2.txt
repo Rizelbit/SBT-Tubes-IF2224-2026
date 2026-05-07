@@ -1,0 +1,21 @@
+program Hello;
+
+var
+  a, b, c,d: integer;
+  ArrayPonso: array [1..10] of integer;
+  ArrayEdo: array [1..10] of char;
+begin
+  a := 5;
+  b := a + 10;
+  writeln('Result = ', b);
+  c := 15;
+  d := c - a;
+  writeln('Result = ', d);
+  ArrayPonso[1] := 20;
+  ArrayEdo[1] := 'A';
+
+  if(ArrayPonso[1] > 10) then
+    writeln('ArrayPonso[1] is greater than 10')
+  else
+    writeln('ArrayPonso[1] is not greater than 10');
+end.

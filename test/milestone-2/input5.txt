@@ -1,0 +1,29 @@
+program DataProcessing;
+
+var
+  a, b, limit: integer;
+  ArrayA, ArrayB: array [1..5] of integer;
+  Kode: array [1..3] of char;
+begin
+  a := 1;
+  b := 5;
+  limit := 5;
+
+  Kode[1] := 'A';
+  Kode[2] := 'B';
+  Kode[3] := 'C';
+
+  while a < limit + 1 do
+    ArrayA[a] := a * 2;
+    ArrayB[a] := b * 2;
+    
+    if (ArrayA[a] > ArrayB[a]) then
+      writeln('ArrayA menang dengan nilai ', ArrayA[a])
+    else
+      writeln('ArrayB menang dengan nilai ', ArrayB[a]);
+
+    a := a + 1;
+    b := b - 1;
+  
+  writeln('Kode eksekusi terakhir: ', Kode[3]);
+end.
