@@ -150,7 +150,7 @@ ParseNode* Parser::parseWhileStatement() {
     node->addChild(match(TokenType::WHILESY));
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    node->addChild(parseStatement());
+    node->addChild(parseStatementList());
 
     return node;
 }
