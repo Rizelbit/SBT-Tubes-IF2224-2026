@@ -1,0 +1,22 @@
+Semantic Analysis: SUCCESS (Pending Semantic Checking)
+
+Decorated AST:
+Program(Hello) [type=Unknown, tab=-1, block=-1, level=0]
+├── Declarations [type=Unknown, tab=-1, block=-1, level=0]
+│   ├── VarDecl(a) [type=Unknown, tab=-1, block=-1, level=0]
+│   │   └── Type(integer) [type=Unknown, tab=-1, block=-1, level=0]
+│   └── VarDecl(b) [type=Unknown, tab=-1, block=-1, level=0]
+│       └── Type(integer) [type=Unknown, tab=-1, block=-1, level=0]
+└── Block [type=Unknown, tab=-1, block=-1, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=-1, level=0]
+    │   ├── Var(a) [type=Unknown, tab=-1, block=-1, level=0]
+    │   └── Literal(5) [type=Unknown, tab=-1, block=-1, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=-1, level=0]
+    │   ├── Var(b) [type=Unknown, tab=-1, block=-1, level=0]
+    │   └── BinOp(PLUS) [type=Unknown, tab=-1, block=-1, level=0]
+    │       ├── Var(a) [type=Unknown, tab=-1, block=-1, level=0]
+    │       └── Literal(10) [type=Unknown, tab=-1, block=-1, level=0]
+    ├── ProcedureCall(writeln) [type=Unknown, tab=-1, block=-1, level=0]
+    │   ├── Literal(Result = ) [type=Unknown, tab=-1, block=-1, level=0]
+    │   └── Var(b) [type=Unknown, tab=-1, block=-1, level=0]
+    └── EmptyStatement [type=Unknown, tab=-1, block=-1, level=0]

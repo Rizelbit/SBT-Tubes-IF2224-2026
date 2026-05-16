@@ -155,7 +155,7 @@ ParseNode* Parser::parseWhileStatement() {
     node->addChild(match(TokenType::WHILESY));
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    node->addChild(parseStatementList());
+    node->addChild(parseCompoundStatement());
 
     return node;
 }
@@ -179,20 +179,17 @@ ParseNode* Parser::parseForStatement() {
     node->addChild(match(TokenType::BECOMES));
     node->addChild(parseExpression());
 
-    // (tosy | downtosy) — arah iterasi, wajib salah satu
-    if (peekToken().type == TokenType::TOSY) {
-        node->addChild(match(TokenType::TOSY));
-    } else if (peekToken().type == TokenType::DOWNTOSY) {
-        node->addChild(match(TokenType::DOWNTOSY));
+    TokenType t = peekToken().type;
+    if (t == TokenType::TOSY || t == TokenType::DOWNTOSY) {
+        node->addChild(match(t));
     } else {
-        reportError("Expected 'to' or 'downto' in for-statement, got: " + peekToken().toString());
-        // Graceful fallback: buat node error tapi jangan crash
-        node->addChild(new ParseNode("ERROR(expected to/downto)"));
+        reportError("Expected 'to' or 'downto' in for-loop");
+        node->addChild(new ParseNode("ERROR"));
     }
-
+    
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    node->addChild(parseStatement());
-
+    
+    node->addChild(parseCompoundStatement()); 
     return node;
 }
