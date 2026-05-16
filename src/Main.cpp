@@ -7,10 +7,17 @@
 #include <string>
 
 int main(int argc, char* argv[]) {
-    std::string baseDir = "test/milestone-3/";
+    const std::string baseDir = "test/milestone-3/";
 
-    std::string inputFile  = (argc > 1) ? (baseDir + argv[1]) : (baseDir + "input1.txt");
-    std::string outputFile = (argc > 2) ? (baseDir + argv[2]) : (baseDir + "output1.txt");
+    std::string inputFile  = (argc > 1) ? argv[1] : (baseDir + "input1.txt");
+    std::string outputFile = (argc > 2) ? argv[2] : (baseDir + "output1.txt");
+
+    if (argc > 1 && inputFile.find('/') == std::string::npos && inputFile.find('\\') == std::string::npos) {
+        inputFile = baseDir + inputFile;
+    }
+    if (argc > 2 && outputFile.find('/') == std::string::npos && outputFile.find('\\') == std::string::npos) {
+        outputFile = baseDir + outputFile;
+    }
 
     std::ofstream out(outputFile);
     if (!out.is_open()) {
@@ -28,8 +35,6 @@ int main(int argc, char* argv[]) {
             
             ASTBuilder builder;
             ASTNode* astRoot = builder.build(parseRoot);
-
-            // TODO: SemanticAnalyzer
 
             out << "Semantic Analysis: SUCCESS (Pending Semantic Checking)\n\n";
             out << "Decorated AST:\n";

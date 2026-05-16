@@ -3,7 +3,7 @@ CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 -Isrc
 TARGET   := arion
 SRCDIR   := src
-TESTDIR  := test/milestone-1
+TESTDIR  := test/milestone-3
 
 # Daftar semua file sumber
 SRCS := $(SRCDIR)/Main.cpp \
@@ -36,7 +36,7 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run: all
-	./$(TARGET) $(TESTDIR)/input1.txt $(TESTDIR)/output.txt
+	./$(TARGET) $(TESTDIR)/input1.txt $(TESTDIR)/output1.txt
 
 clean:
 	rm -f $(OBJS) $(TARGET)

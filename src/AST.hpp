@@ -4,7 +4,8 @@
 #include <vector>
 
 enum class TypeKind {
-    Unknown, Void, Integer, Real, Char, Boolean, String, Array, Record, Procedure, Function
+    Unknown, Void, Integer, Real, Char, Boolean, String, Subrange, Enumerated,
+    Array, Record, Procedure, Function
 };
 
 struct SemanticType {
@@ -13,7 +14,8 @@ struct SemanticType {
 };
 
 enum class ASTKind {
-    Program, Block, ConstDecl, TypeDecl, VarDecl, ProcDecl, FuncDecl, Param,
+    Program, DeclarationPart, Block, ConstDecl, TypeDecl, VarDecl, FieldDecl,
+    ProcDecl, FuncDecl, Param, Type, ArrayType, RecordType, RangeType, EnumType,
     Assign, If, While, Repeat, For, Case, ProcedureCall, FunctionCall,
     BinOp, UnaryOp, Literal, Var, ArrayAccess, FieldAccess, Empty
 };
