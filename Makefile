@@ -21,7 +21,8 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/ParseNode.cpp \
         $(SRCDIR)/AST.cpp \
         $(SRCDIR)/ASTBuilder.cpp \
-        $(SRCDIR)/ASTPrinter.cpp 
+        $(SRCDIR)/ASTPrinter.cpp \
+        $(SRCDIR)/SemanticAnalyzer.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 
@@ -36,7 +37,7 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run: all
-	./$(TARGET) $(TESTDIR)/input1.txt $(TESTDIR)/output1.txt
+	./$(TARGET) $(TESTDIR)/input3.txt $(TESTDIR)/output3.txt
 
 clean:
 	rm -f $(OBJS) $(TARGET)

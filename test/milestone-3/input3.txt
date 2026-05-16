@@ -1,0 +1,20 @@
+program DeclarationDemo;
+const
+  limit = 10;
+type
+  Index = 1..10;
+  IntArray = array [Index] of integer;
+  Point = record
+    x, y: integer;
+  end;
+var
+  arr: IntArray;
+  p: Point;
+  value: integer;
+function AddOne(x: integer): integer;
+begin
+  AddOne := x + 1;
+end;
+begin
+  value := limit;
+end.
