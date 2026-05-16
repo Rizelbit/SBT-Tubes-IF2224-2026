@@ -30,11 +30,13 @@ ASTNode* ASTBuilder::buildProgram(ParseNode* node) {
             ast->value = extractTokenValue(header->children[1]->name);
         }
     }
-    for (auto child : node->children) {
-        if (child->name == "<compound-statement>") {
+    for (auto child : node->children) {\
+        if (child->name == "<declaration-part>") { // ini sementara cuma buat testing AST builder, tolong disesuaikan orang 3
+            ast->addChild(new ASTNode(ASTKind::VarDecl, "Variables Declaration Block"));
+            // TODO: <declaration-part> handler
+        } else if (child->name == "<compound-statement>") {
             ast->addChild(buildBlock(child));
         }
-        // TODO: <declaration-part> handler
     }
     return ast;
 }
@@ -64,16 +66,51 @@ ASTNode* ASTBuilder::buildStatement(ParseNode* node) {
         assignNode->addChild(buildExpression(firstChild->children[2]));
 
         return assignNode;
+    } else if (firstChild->name == "<procedure/function-call>") {
+        ASTNode* callNode = new ASTNode(ASTKind::ProcedureCall, extractTokenValue(firstChild->children[0]->name));
+        if (firstChild->children.size() > 2 && firstChild->children[2]->name == "<parameter-list>") {
+            ParseNode* paramList = firstChild->children[2];
+            for (auto p : paramList->children) {
+                if (p->name == "<expression>") {
+                    callNode->addChild(buildExpression(p));
+                }
+            }
+        }
+        return callNode;
     }
 
     return new ASTNode(ASTKind::Empty);
 }
 
 ASTNode* ASTBuilder::buildExpression(ParseNode* node) {
+    if (!node) return nullptr;
+    
     if (node->name.find("IDENT") != std::string::npos) {
         return new ASTNode(ASTKind::Var, extractTokenValue(node->name));
-    } else if (node->name.find("INTCON") != std::string::npos) {
+    }
+    if (node->name.find("INTCON") != std::string::npos || node->name.find("STRING") != std::string::npos) {
         return new ASTNode(ASTKind::Literal, extractTokenValue(node->name));
     }
+
+    if (node->children.size() == 3) {
+        std::string midName = node->children[1]->name;
+        if (midName == "<additive-operator>" || midName == "<multiplicative-operator>") {
+            std::string opSymbol = extractTokenValue(node->children[1]->children[0]->name);
+            if (opSymbol.empty()) opSymbol = node->children[1]->children[0]->name;
+            
+            ASTNode* binOp = new ASTNode(ASTKind::BinOp, opSymbol);
+            binOp->addChild(buildExpression(node->children[0]));
+            binOp->addChild(buildExpression(node->children[2]));
+            return binOp;
+        }
+    }
+
+    for (auto child : node->children) {
+        ASTNode* result = buildExpression(child);
+        if (result && result->kind != ASTKind::Empty) {
+            return result;
+        }
+    }
+    
     return new ASTNode(ASTKind::Empty);
 }

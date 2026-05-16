@@ -1,14 +1,16 @@
 #include "Lexer.hpp"
 #include "Parser.hpp"
+#include "ASTBuilder.hpp"
+#include "ASTPrinter.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
 
 int main(int argc, char* argv[]) {
-    std::string baseDir = "test/milestone-2/";
+    std::string baseDir = "test/milestone-3/";
 
-    std::string inputFile  = (argc > 1) ? (baseDir + argv[1]) : (baseDir + "test1.txt");
-    std::string outputFile = (argc > 2) ? (baseDir + argv[2]) : (baseDir + "output.txt");
+    std::string inputFile  = (argc > 1) ? (baseDir + argv[1]) : (baseDir + "input1.txt");
+    std::string outputFile = (argc > 2) ? (baseDir + argv[2]) : (baseDir + "output1.txt");
 
     std::ofstream out(outputFile);
     if (!out.is_open()) {
@@ -19,21 +21,31 @@ int main(int argc, char* argv[]) {
     try {
         Lexer lexer(inputFile);
         Parser parser(lexer);
-        ParseNode* parseTreeRoot = parser.parse();
+        ParseNode* parseRoot = parser.parse();
 
         if (parser.isSuccess()) {
-            parseTreeRoot->printTree(out);
-            std::cout << "Parsing complete. Parse Tree written to '" << outputFile << "'.\n";
+            std::cout << "Syntax Analysis: SUCCESS\n";
+            
+            ASTBuilder builder;
+            ASTNode* astRoot = builder.build(parseRoot);
+
+            // TODO: SemanticAnalyzer
+
+            out << "Semantic Analysis: SUCCESS (Pending Semantic Checking)\n\n";
+            out << "Decorated AST:\n";
+            ASTPrinter printer;
+            printer.print(astRoot, out);
+
+            std::cout << "Pipeline complete. Check " << outputFile << "\n";
+            delete astRoot;
         } else {
-            std::cerr << "Parsing failed due to Syntax Errors.\n";
-            out << "Parsing failed due to Syntax Errors.\n";
+            std::cerr << "Semantic Analysis: FAILED (Syntax Error)\n";
+            out << "Semantic Analysis: FAILED (Syntax Error)\n";
         }
 
-        delete parseTreeRoot;
-
-    } catch (const std::runtime_error& e) {
+        delete parseRoot;
+    } catch (const std::exception& e) {
         std::cerr << "Fatal Error: " << e.what() << "\n";
-        out << "Fatal Error: " << e.what() << "\n";
         return 1;
     }
 

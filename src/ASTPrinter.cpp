@@ -8,6 +8,9 @@ std::string ASTPrinter::kindToString(ASTKind kind) {
         case ASTKind::Var: return "Var";
         case ASTKind::Literal: return "Literal";
         case ASTKind::Empty: return "EmptyStatement";
+        case ASTKind::VarDecl: return "VarDecl";
+        case ASTKind::BinOp: return "BinOp";
+        case ASTKind::ProcedureCall: return "ProcedureCall";
         default: return "Node";
     }
 }
@@ -21,10 +24,15 @@ std::string ASTPrinter::typeKindToString(TypeKind kind) {
     }
 }
 
-void ASTPrinter::print(ASTNode* root, std::ostream& out, const std::string& prefix, bool isLast) {
+void ASTPrinter::print(ASTNode* root, std::ostream& out, const std::string& prefix, bool isLast, bool isRoot) {
     if (!root) return;
     
-    out << prefix << (prefix.empty() ? "" : (isLast ? "└── " : "├── "));
+    if (!isRoot) {
+        out << prefix << (isLast ? "└── " : "├── ");
+    } else {
+        out << prefix;
+    }
+    
     out << kindToString(root->kind);
     if (!root->value.empty()) out << "(" << root->value << ")";
     
@@ -32,8 +40,12 @@ void ASTPrinter::print(ASTNode* root, std::ostream& out, const std::string& pref
         << ", tab=" << root->tabIndex 
         << ", level=" << root->lexicalLevel << "]\n";
 
-    std::string childPrefix = prefix + (prefix.empty() ? "" : (isLast ? "    " : "│   "));
+    std::string childPrefix = prefix;
+    if (!isRoot) {
+        childPrefix += (isLast ? "    " : "│   ");
+    }
+
     for (size_t i = 0; i < root->children.size(); ++i) {
-        print(root->children[i], out, childPrefix, (i == root->children.size() - 1));
+        print(root->children[i], out, childPrefix, (i == root->children.size() - 1), false);
     }
 }
