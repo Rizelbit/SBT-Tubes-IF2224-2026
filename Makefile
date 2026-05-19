@@ -1,11 +1,9 @@
 CXX      := g++
-# Tambahkan $(SRCDIR) setelah -I agar header terbaca
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 -Isrc
 TARGET   := arion
 SRCDIR   := src
 TESTDIR  := test/milestone-3
 
-# Daftar semua file sumber
 SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/Token.cpp \
         $(SRCDIR)/Lexer.cpp \
@@ -22,6 +20,8 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/AST.cpp \
         $(SRCDIR)/ASTBuilder.cpp \
         $(SRCDIR)/ASTPrinter.cpp \
+        $(SRCDIR)/TypeSystem.cpp \
+        $(SRCDIR)/SymbolTable.cpp \
         $(SRCDIR)/SemanticAnalyzer.cpp
 
 OBJS := $(SRCS:.cpp=.o)
