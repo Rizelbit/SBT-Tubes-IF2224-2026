@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AST.hpp"
+#include "SymbolTable.hpp"
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 struct SemanticError {
@@ -11,12 +11,17 @@ struct SemanticError {
 
 class SemanticAnalyzer {
 public:
+    SemanticAnalyzer();
+    explicit SemanticAnalyzer(SymbolTable& symbols);
+
     bool analyze(ASTNode* root);
     const std::vector<SemanticError>& errors() const;
+    SymbolTable& symbolTable();
+    const SymbolTable& symbolTable() const;
 
 private:
     struct ConstantInfo {
-        TypeKind type = TypeKind::Unknown;
+        SemanticType type;
         int ordinal = 0;
         bool hasOrdinal = false;
         bool valid = false;
@@ -29,17 +34,13 @@ private:
         bool hasBounds = false;
     };
 
-    struct SymbolInfo {
-        TypeKind objectType = TypeKind::Unknown;
-        TypeInfo declaredType;
-        bool isType = false;
-        bool isConstant = false;
-    };
-
+    SymbolTable ownedSymbols;
+    SymbolTable* symbols;
+    bool predefinedInitialized = false;
     std::vector<SemanticError> semanticErrors;
-    std::vector<std::unordered_map<std::string, SymbolInfo>> scopes;
 
-    void initializePredefinedSymbols();
+    void ensurePredefinedSymbols();
+    void annotate(ASTNode* node);
     void visit(ASTNode* node);
     void visitProgram(ASTNode* node);
     void visitDeclarationPart(ASTNode* node);
@@ -59,11 +60,9 @@ private:
     TypeInfo resolveEnumType(ASTNode* node);
     ConstantInfo evaluateConstant(ASTNode* node);
 
-    bool declareSymbol(const std::string& name, const SymbolInfo& symbol);
-    const SymbolInfo* lookupSymbol(const std::string& name) const;
+    bool isRecordFieldContext(ASTNode* node) const;
     bool containsReturnAssignment(ASTNode* node, const std::string& functionName) const;
-    bool isOrdinal(TypeKind kind) const;
+    bool isOrdinal(const SemanticType& type) const;
     std::string normalize(const std::string& value) const;
-    std::string typeName(TypeKind kind) const;
     void reportError(const std::string& message);
 };

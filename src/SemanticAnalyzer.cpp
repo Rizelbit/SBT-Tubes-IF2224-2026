@@ -4,11 +4,13 @@
 #include <cstdlib>
 #include <set>
 
+SemanticAnalyzer::SemanticAnalyzer() : ownedSymbols(), symbols(&ownedSymbols) {}
+
+SemanticAnalyzer::SemanticAnalyzer(SymbolTable& symbols) : ownedSymbols(), symbols(&symbols) {}
+
 bool SemanticAnalyzer::analyze(ASTNode* root) {
     semanticErrors.clear();
-    scopes.clear();
-    scopes.push_back({});
-    initializePredefinedSymbols();
+    ensurePredefinedSymbols();
     visit(root);
     return semanticErrors.empty();
 }
@@ -17,39 +19,35 @@ const std::vector<SemanticError>& SemanticAnalyzer::errors() const {
     return semanticErrors;
 }
 
-void SemanticAnalyzer::initializePredefinedSymbols() {
-    const std::vector<std::pair<std::string, TypeKind>> builtins = {
-        {"integer", TypeKind::Integer},
-        {"real", TypeKind::Real},
-        {"char", TypeKind::Char},
-        {"boolean", TypeKind::Boolean},
-        {"string", TypeKind::String}
-    };
+SymbolTable& SemanticAnalyzer::symbolTable() {
+    return *symbols;
+}
 
-    for (const auto& builtin : builtins) {
-        TypeInfo info;
-        info.type.kind = builtin.second;
-        SymbolInfo symbol;
-        symbol.objectType = builtin.second;
-        symbol.declaredType = info;
-        symbol.isType = true;
-        scopes.back()[builtin.first] = symbol;
+const SymbolTable& SemanticAnalyzer::symbolTable() const {
+    return *symbols;
+}
+
+void SemanticAnalyzer::ensurePredefinedSymbols() {
+    if (!predefinedInitialized) {
+        symbols->initPredefined();
+        predefinedInitialized = true;
     }
+}
 
-    SymbolInfo trueSymbol;
-    trueSymbol.objectType = TypeKind::Boolean;
-    trueSymbol.declaredType.type.kind = TypeKind::Boolean;
-    trueSymbol.isConstant = true;
-    scopes.back()["true"] = trueSymbol;
-
-    SymbolInfo falseSymbol = trueSymbol;
-    scopes.back()["false"] = falseSymbol;
+void SemanticAnalyzer::annotate(ASTNode* node) {
+    if (!node) {
+        return;
+    }
+    node->lexicalLevel = symbols->currentLevel();
+    node->blockIndex = symbols->currentBlock();
 }
 
 void SemanticAnalyzer::visit(ASTNode* node) {
     if (!node) {
         return;
     }
+
+    annotate(node);
 
     switch (node->kind) {
         case ASTKind::Program:
@@ -86,12 +84,15 @@ void SemanticAnalyzer::visit(ASTNode* node) {
 }
 
 void SemanticAnalyzer::visitProgram(ASTNode* node) {
-    SymbolInfo programSymbol;
-    programSymbol.objectType = TypeKind::Void;
-    declareSymbol(node->value, programSymbol);
+    SemanticType type = makeVoidType();
+    node->inferredType = type;
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Program, type, 1, 0);
 
-    node->inferredType.kind = TypeKind::Void;
-    node->lexicalLevel = static_cast<int>(scopes.size()) - 1;
+    if (node->tabIndex == -1) {
+        reportError("Redeclaration of program identifier '" + node->value + "'");
+    }
+
+    annotate(node);
 
     for (ASTNode* child : node->children) {
         visit(child);
@@ -99,12 +100,14 @@ void SemanticAnalyzer::visitProgram(ASTNode* node) {
 }
 
 void SemanticAnalyzer::visitDeclarationPart(ASTNode* node) {
+    annotate(node);
     for (ASTNode* child : node->children) {
         visit(child);
     }
 }
 
 void SemanticAnalyzer::visitBlock(ASTNode* node) {
+    annotate(node);
     for (ASTNode* child : node->children) {
         if (child && child->kind == ASTKind::DeclarationPart) {
             visit(child);
@@ -113,32 +116,27 @@ void SemanticAnalyzer::visitBlock(ASTNode* node) {
 }
 
 void SemanticAnalyzer::visitConstDecl(ASTNode* node) {
+    annotate(node);
     ConstantInfo constant = node->children.empty() ? ConstantInfo{} : evaluateConstant(node->children.front());
-    node->inferredType.kind = constant.valid ? constant.type : TypeKind::Unknown;
+    node->inferredType = constant.valid ? constant.type : makeUnknownType();
 
-    SymbolInfo symbol;
-    symbol.objectType = node->inferredType.kind;
-    symbol.declaredType.type.kind = node->inferredType.kind;
-    symbol.declaredType.low = constant.ordinal;
-    symbol.declaredType.high = constant.ordinal;
-    symbol.declaredType.hasBounds = constant.hasOrdinal;
-    symbol.isConstant = true;
+    int adr = constant.hasOrdinal ? constant.ordinal : 0;
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Constant, node->inferredType, 1, adr);
 
-    if (!declareSymbol(node->value, symbol)) {
+    if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
+    } else {
+        symbols->tabAt(node->tabIndex).initialized = true;
     }
 }
 
 void SemanticAnalyzer::visitTypeDecl(ASTNode* node) {
+    annotate(node);
     TypeInfo type = node->children.empty() ? TypeInfo{} : resolveType(node->children.front());
     node->inferredType = type.type;
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Type, type.type, 1, 0);
 
-    SymbolInfo symbol;
-    symbol.objectType = type.type.kind;
-    symbol.declaredType = type;
-    symbol.isType = true;
-
-    if (!declareSymbol(node->value, symbol)) {
+    if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
         return;
     }
@@ -146,52 +144,60 @@ void SemanticAnalyzer::visitTypeDecl(ASTNode* node) {
     if (!node->children.empty() && node->children.front()->kind == ASTKind::EnumType) {
         int ordinal = 0;
         std::set<std::string> seen;
+
         for (ASTNode* enumerator : node->children.front()->children) {
-            std::string name = enumerator ? enumerator->value : "";
-            std::string key = normalize(name);
+            if (!enumerator) {
+                continue;
+            }
+
+            std::string key = normalize(enumerator->value);
             if (seen.count(key)) {
-                reportError("Duplicate enumerated identifier '" + name + "'");
+                reportError("Duplicate enumerated identifier '" + enumerator->value + "'");
                 continue;
             }
             seen.insert(key);
 
-            SymbolInfo enumConstant;
-            enumConstant.objectType = TypeKind::Enumerated;
-            enumConstant.declaredType = type;
-            enumConstant.declaredType.low = ordinal++;
-            enumConstant.isConstant = true;
+            enumerator->inferredType = type.type;
+            enumerator->tabIndex = symbols->declare(enumerator->value, ObjectKind::Constant, type.type, 1, ordinal++);
+            annotate(enumerator);
 
-            if (!declareSymbol(name, enumConstant)) {
-                reportError("Redeclaration of identifier '" + name + "'");
+            if (enumerator->tabIndex == -1) {
+                reportError("Redeclaration of identifier '" + enumerator->value + "'");
+            } else {
+                symbols->tabAt(enumerator->tabIndex).initialized = true;
             }
         }
     }
 }
 
 void SemanticAnalyzer::visitVarDecl(ASTNode* node) {
+    annotate(node);
     TypeInfo type = node->children.empty() ? TypeInfo{} : resolveType(node->children.front());
     node->inferredType = type.type;
 
-    SymbolInfo symbol;
-    symbol.objectType = type.type.kind;
-    symbol.declaredType = type;
+    ObjectKind obj = node->kind == ASTKind::FieldDecl ? ObjectKind::Field : ObjectKind::Variable;
+    node->tabIndex = symbols->declare(node->value, obj, type.type);
 
-    if (!declareSymbol(node->value, symbol)) {
+    if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
     }
 }
 
 void SemanticAnalyzer::visitProcDecl(ASTNode* node) {
-    SymbolInfo symbol;
-    symbol.objectType = TypeKind::Procedure;
+    annotate(node);
+    SemanticType type = makeType(TypeKind::Procedure);
+    node->inferredType = type;
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Procedure, type, 1, 0);
 
-    if (!declareSymbol(node->value, symbol)) {
+    if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
         return;
     }
 
-    node->inferredType.kind = TypeKind::Procedure;
-    scopes.push_back({});
+    int blockIndex = symbols->enterBlock();
+    symbols->tabAt(node->tabIndex).ref = blockIndex;
+    node->blockIndex = blockIndex;
+    node->lexicalLevel = symbols->currentLevel();
 
     for (ASTNode* child : node->children) {
         if (!child) {
@@ -205,10 +211,11 @@ void SemanticAnalyzer::visitProcDecl(ASTNode* node) {
         }
     }
 
-    scopes.pop_back();
+    symbols->leaveBlock();
 }
 
 void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
+    annotate(node);
     ASTNode* returnTypeNode = nullptr;
     ASTNode* parameterPart = nullptr;
     ASTNode* body = nullptr;
@@ -232,17 +239,18 @@ void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
         reportError("Invalid function return type for '" + node->value + "'");
     }
 
-    SymbolInfo symbol;
-    symbol.objectType = TypeKind::Function;
-    symbol.declaredType = returnType;
+    node->inferredType = returnType.type;
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Function, returnType.type, 1, 0);
 
-    if (!declareSymbol(node->value, symbol)) {
+    if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
         return;
     }
 
-    node->inferredType = returnType.type;
-    scopes.push_back({});
+    int blockIndex = symbols->enterBlock();
+    symbols->tabAt(node->tabIndex).ref = blockIndex;
+    node->blockIndex = blockIndex;
+    node->lexicalLevel = symbols->currentLevel();
 
     if (parameterPart) {
         visitDeclarationPart(parameterPart);
@@ -256,18 +264,16 @@ void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
         reportError("Function '" + node->value + "' does not assign a return value");
     }
 
-    scopes.pop_back();
+    symbols->leaveBlock();
 }
 
 void SemanticAnalyzer::visitParam(ASTNode* node) {
+    annotate(node);
     TypeInfo type = node->children.empty() ? TypeInfo{} : resolveType(node->children.front());
     node->inferredType = type.type;
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Parameter, type.type);
 
-    SymbolInfo symbol;
-    symbol.objectType = type.type.kind;
-    symbol.declaredType = type;
-
-    if (!declareSymbol(node->value, symbol)) {
+    if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
     }
 }
@@ -276,6 +282,8 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveType(ASTNode* node) {
     if (!node) {
         return TypeInfo{};
     }
+
+    annotate(node);
 
     switch (node->kind) {
         case ASTKind::Type:
@@ -295,17 +303,19 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveType(ASTNode* node) {
 
 SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveTypeReference(ASTNode* node) {
     TypeInfo type;
-    const SymbolInfo* symbol = lookupSymbol(node->value);
+    int index = symbols->lookup(node->value);
 
-    if (!symbol || !symbol->isType) {
+    if (index == -1 || symbols->tabAt(index).obj != ObjectKind::Type) {
         reportError("Unknown type '" + node->value + "'");
-        type.type.kind = TypeKind::Unknown;
+        type.type = makeUnknownType();
         node->inferredType = type.type;
         return type;
     }
 
-    type = symbol->declaredType;
+    const TabEntry& entry = symbols->tabAt(index);
+    type.type = entry.type;
     node->inferredType = type.type;
+    node->tabIndex = index;
     return type;
 }
 
@@ -314,6 +324,8 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveRangeType(ASTNode* node) {
 
     if (node->children.size() < 2) {
         reportError("Invalid subrange type");
+        type.type = makeUnknownType();
+        node->inferredType = type.type;
         return type;
     }
 
@@ -322,25 +334,33 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveRangeType(ASTNode* node) {
 
     if (!low.valid || !high.valid) {
         reportError("Invalid constant in subrange type");
+        type.type = makeUnknownType();
+        node->inferredType = type.type;
         return type;
     }
 
-    if (low.type == TypeKind::Real || high.type == TypeKind::Real) {
+    if (low.type.kind == TypeKind::Real || high.type.kind == TypeKind::Real) {
         reportError("Subrange cannot use Real type");
+        type.type = makeUnknownType();
+        node->inferredType = type.type;
         return type;
     }
 
-    if (low.type != high.type) {
+    if (low.type.kind != high.type.kind) {
         reportError("Subrange bounds must have the same type");
+        type.type = makeUnknownType();
+        node->inferredType = type.type;
         return type;
     }
 
     if (low.hasOrdinal && high.hasOrdinal && low.ordinal > high.ordinal) {
         reportError("Invalid range: lower bound greater than upper bound");
+        type.type = makeUnknownType();
+        node->inferredType = type.type;
         return type;
     }
 
-    type.type.kind = TypeKind::Subrange;
+    type.type = makeType(TypeKind::Subrange);
     type.low = low.ordinal;
     type.high = high.ordinal;
     type.hasBounds = low.hasOrdinal && high.hasOrdinal;
@@ -350,10 +370,12 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveRangeType(ASTNode* node) {
 
 SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveArrayType(ASTNode* node) {
     TypeInfo type;
-    type.type.kind = TypeKind::Array;
+    type.type = makeType(TypeKind::Array);
 
     if (node->children.size() < 2) {
         reportError("Invalid array type");
+        type.type = makeUnknownType();
+        node->inferredType = type.type;
         return type;
     }
 
@@ -364,21 +386,32 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveArrayType(ASTNode* node) {
         reportError("Array index type cannot be Real");
     }
 
-    if (!isOrdinal(indexType.type.kind) && indexType.type.kind != TypeKind::Subrange) {
+    if (!isOrdinal(indexType.type)) {
         reportError("Array index type must be ordinal");
     }
 
+    ATabEntry arrayEntry;
+    arrayEntry.xtyp = indexType.type;
+    arrayEntry.etyp = elementType.type;
+    arrayEntry.eref = elementType.type.ref;
+    arrayEntry.low = indexType.low;
+    arrayEntry.high = indexType.high;
+    arrayEntry.elsz = getTypeSize(elementType.type);
+    arrayEntry.size = indexType.hasBounds && indexType.high >= indexType.low
+        ? (indexType.high - indexType.low + 1) * (arrayEntry.elsz > 0 ? arrayEntry.elsz : 1)
+        : 0;
+
+    type.type.ref = symbols->addArrayType(arrayEntry);
     node->inferredType = type.type;
-    if (elementType.type.kind == TypeKind::Unknown) {
-        type.type.kind = TypeKind::Unknown;
-    }
     return type;
 }
 
 SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveRecordType(ASTNode* node) {
     TypeInfo type;
-    type.type.kind = TypeKind::Record;
+    type.type = makeType(TypeKind::Record);
     std::set<std::string> fields;
+
+    int blockIndex = symbols->enterBlock();
 
     for (ASTNode* field : node->children) {
         if (!field || field->kind != ASTKind::FieldDecl) {
@@ -391,20 +424,20 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveRecordType(ASTNode* node) {
             continue;
         }
         fields.insert(key);
-
-        if (!field->children.empty()) {
-            TypeInfo fieldType = resolveType(field->children.front());
-            field->inferredType = fieldType.type;
-        }
+        visitVarDecl(field);
     }
 
+    type.type.ref = blockIndex;
+    node->blockIndex = blockIndex;
+    node->lexicalLevel = symbols->currentLevel();
     node->inferredType = type.type;
+    symbols->leaveBlock();
     return type;
 }
 
 SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveEnumType(ASTNode* node) {
     TypeInfo type;
-    type.type.kind = TypeKind::Enumerated;
+    type.type = makeType(TypeKind::Enumerated);
     type.low = 0;
     type.high = static_cast<int>(node->children.size()) - 1;
     type.hasBounds = true;
@@ -418,6 +451,8 @@ SemanticAnalyzer::ConstantInfo SemanticAnalyzer::evaluateConstant(ASTNode* node)
     if (!node) {
         return constant;
     }
+
+    annotate(node);
 
     if (node->kind == ASTKind::Literal) {
         constant.valid = true;
@@ -434,69 +469,46 @@ SemanticAnalyzer::ConstantInfo SemanticAnalyzer::evaluateConstant(ASTNode* node)
         }
 
         if (numeric && real) {
-            constant.type = TypeKind::Real;
+            constant.type = makeRealType();
         } else if (numeric) {
-            constant.type = TypeKind::Integer;
+            constant.type = makeIntType();
             constant.ordinal = std::atoi(node->value.c_str());
             constant.hasOrdinal = true;
         } else if (node->value.size() == 1) {
-            constant.type = TypeKind::Char;
+            constant.type = makeCharType();
             constant.ordinal = static_cast<unsigned char>(node->value[0]);
             constant.hasOrdinal = true;
         } else {
-            constant.type = TypeKind::String;
+            constant.type = makeStringType();
         }
 
-        node->inferredType.kind = constant.type;
+        node->inferredType = constant.type;
         return constant;
     }
 
     if (node->kind == ASTKind::Var) {
-        const SymbolInfo* symbol = lookupSymbol(node->value);
-        if (!symbol || !symbol->isConstant) {
+        int index = symbols->lookup(node->value);
+
+        if (index == -1 || symbols->tabAt(index).obj != ObjectKind::Constant) {
             reportError("Undeclared constant '" + node->value + "'");
             return constant;
         }
 
-        constant.type = symbol->objectType;
-        constant.ordinal = symbol->declaredType.low;
-        constant.hasOrdinal = symbol->declaredType.hasBounds;
+        const TabEntry& entry = symbols->tabAt(index);
+        constant.type = entry.type;
+        constant.ordinal = entry.adr;
+        constant.hasOrdinal = isOrdinal(entry.type);
         constant.valid = true;
-        node->inferredType.kind = constant.type;
+        node->tabIndex = index;
+        node->inferredType = constant.type;
         return constant;
     }
 
     return constant;
 }
 
-bool SemanticAnalyzer::declareSymbol(const std::string& name, const SymbolInfo& symbol) {
-    std::string key = normalize(name);
-    if (key.empty()) {
-        return true;
-    }
-
-    if (scopes.empty()) {
-        scopes.push_back({});
-    }
-
-    auto& current = scopes.back();
-    if (current.find(key) != current.end()) {
-        return false;
-    }
-
-    current[key] = symbol;
-    return true;
-}
-
-const SemanticAnalyzer::SymbolInfo* SemanticAnalyzer::lookupSymbol(const std::string& name) const {
-    std::string key = normalize(name);
-    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
-        auto found = it->find(key);
-        if (found != it->end()) {
-            return &found->second;
-        }
-    }
-    return nullptr;
+bool SemanticAnalyzer::isRecordFieldContext(ASTNode* node) const {
+    return node && node->kind == ASTKind::FieldDecl;
 }
 
 bool SemanticAnalyzer::containsReturnAssignment(ASTNode* node, const std::string& functionName) const {
@@ -520,11 +532,12 @@ bool SemanticAnalyzer::containsReturnAssignment(ASTNode* node, const std::string
     return false;
 }
 
-bool SemanticAnalyzer::isOrdinal(TypeKind kind) const {
-    return kind == TypeKind::Integer ||
-           kind == TypeKind::Char ||
-           kind == TypeKind::Boolean ||
-           kind == TypeKind::Enumerated;
+bool SemanticAnalyzer::isOrdinal(const SemanticType& type) const {
+    return type.kind == TypeKind::Integer ||
+           type.kind == TypeKind::Char ||
+           type.kind == TypeKind::Boolean ||
+           type.kind == TypeKind::Enumerated ||
+           type.kind == TypeKind::Subrange;
 }
 
 std::string SemanticAnalyzer::normalize(const std::string& value) const {
@@ -533,25 +546,6 @@ std::string SemanticAnalyzer::normalize(const std::string& value) const {
         return static_cast<char>(std::tolower(c));
     });
     return result;
-}
-
-std::string SemanticAnalyzer::typeName(TypeKind kind) const {
-    switch (kind) {
-        case TypeKind::Unknown: return "Unknown";
-        case TypeKind::Void: return "Void";
-        case TypeKind::Integer: return "Integer";
-        case TypeKind::Real: return "Real";
-        case TypeKind::Char: return "Char";
-        case TypeKind::Boolean: return "Boolean";
-        case TypeKind::String: return "String";
-        case TypeKind::Subrange: return "Subrange";
-        case TypeKind::Enumerated: return "Enumerated";
-        case TypeKind::Array: return "Array";
-        case TypeKind::Record: return "Record";
-        case TypeKind::Procedure: return "Procedure";
-        case TypeKind::Function: return "Function";
-    }
-    return "Unknown";
 }
 
 void SemanticAnalyzer::reportError(const std::string& message) {
