@@ -68,6 +68,7 @@ public:
     int declare(const std::string& name, ObjectKind obj, const SemanticType& type, int nrm = 1, int adrOverride = -1);
     int lookup(const std::string& name) const;  
     int lookupCurrentScope(const std::string& name) const; 
+    int lookupInBlock(const std::string& name, int blockIdx) const;
 
 
     TabEntry& tabAt(int i) { return tab_[i]; }

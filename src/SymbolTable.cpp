@@ -201,6 +201,19 @@ int SymbolTable::lookup(const std::string& name) const {
     return -1;
 }
 
+int SymbolTable::lookupInBlock(const std::string& name, int blockIdx) const {
+    if (blockIdx < 0 || blockIdx >= static_cast<int>(btab_.size())) return -1;
+    std::string key = normalize(name);
+    int current = btab_[blockIdx].last;
+    while (current > 0 && current < static_cast<int>(tab_.size())) {
+        if (normalize(tab_[current].identifier) == key) {
+            return current;
+        }
+        current = tab_[current].link;
+    }
+    return -1;
+}
+
 int SymbolTable::lookupCurrentScope(const std::string& name) const {
     std::string key   = normalize(name);
     int         start = scopeStart_.back();
