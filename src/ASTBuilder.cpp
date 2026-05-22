@@ -28,7 +28,25 @@ std::string ASTBuilder::operatorText(ParseNode* node) const {
     if (!node) return "";
     ParseNode* op = isOperatorWrapper(node) && !node->children.empty() ? node->children[0] : node;
     std::string value = extractTokenValue(op->name);
-    return value.empty() ? extractTokenKind(op->name) : value;
+    if (!value.empty()) return value;
+
+    std::string kind = extractTokenKind(op->name);
+    if (kind == "PLUS") return "+";
+    if (kind == "MINUS") return "-";
+    if (kind == "TIMES") return "*";
+    if (kind == "RDIV") return "/";
+    if (kind == "IDIV") return "div";
+    if (kind == "IMOD") return "mod";
+    if (kind == "ANDSY") return "and";
+    if (kind == "ORSY") return "or";
+    if (kind == "NOTSY") return "not";
+    if (kind == "EQL") return "=";
+    if (kind == "NEQ") return "<>";
+    if (kind == "LSS") return "<";
+    if (kind == "LEQ") return "<=";
+    if (kind == "GTR") return ">";
+    if (kind == "GEQ") return ">=";
+    return kind;
 }
 
 ASTNode* ASTBuilder::clone(ASTNode* node) {
@@ -298,6 +316,13 @@ ASTNode* ASTBuilder::buildBlock(ParseNode* node) {
             ASTNode* declarations = buildDeclarationPart(child);
             if (!declarations->children.empty()) block->addChild(declarations);
             else delete declarations;
+        } else if (child->name == "<compound-statement>") {
+            ASTNode* compound = buildBlock(child);
+            for (ASTNode* grandChild : compound->children) {
+                block->addChild(grandChild);
+            }
+            compound->children.clear();
+            delete compound;
         } else if (child->name == "<statement-list>") {
             for (ParseNode* stmtChild : child->children) {
                 if (stmtChild->name == "<statement>") {
@@ -362,7 +387,6 @@ ASTNode* ASTBuilder::buildStatement(ParseNode* node) {
         ASTNode* forNode = new ASTNode(ASTKind::For);
         for (ParseNode* child : firstChild->children) {
             if (isToken(child, "IDENT") && forNode->value.empty()) forNode->value = extractTokenValue(child->name);
-            else if (isToken(child, "TOSY") || isToken(child, "DOWNTOSY")) forNode->value += " " + extractTokenKind(child->name);
             else if (child->name == "<expression>") forNode->addChild(buildExpression(child));
             else if (child->name == "<compound-statement>") forNode->addChild(buildBlock(child));
         }

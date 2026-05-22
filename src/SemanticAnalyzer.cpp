@@ -228,17 +228,24 @@ void SemanticAnalyzer::visitFor(ASTNode* node) {
     // Implementasi untuk ngecek start loop, iterasi stop loop (Assignment Compatible dengan start), 
     // memastikan variabel index itu ordinal & declared var.
     int index = symbols->lookup(node->value);
+    SemanticType controlType = makeUnknownType();
     if (index == -1) {
         reportError(SemanticErrors::undeclaredIdentifier(node->value));
     } else {
         node->tabIndex = index;
-        SemanticType controlType = symbols->tabAt(index).type;
+        controlType = symbols->tabAt(index).type;
         if (!isOrdinal(controlType)) {
             reportError(SemanticErrors::invalidForControlVar(node->value));
         }
     }
-    for (ASTNode* child : node->children) {
+
+    for (size_t i = 0; i < node->children.size(); ++i) {
+        ASTNode* child = node->children[i];
         visit(child);
+        if (i < 2 && controlType.kind != TypeKind::Unknown && child->inferredType.kind != TypeKind::Unknown &&
+            !isAssignmentCompatible(controlType, child->inferredType)) {
+            reportError(SemanticErrors::typeMismatchAssignment(controlType, child->inferredType));
+        }
     }
 }
 
@@ -365,6 +372,11 @@ void SemanticAnalyzer::visitBlock(ASTNode* node) {
     annotate(node);
     for (ASTNode* child : node->children) {
         if (child && child->kind == ASTKind::DeclarationPart) {
+            visit(child);
+        }
+    }
+    for (ASTNode* child : node->children) {
+        if (child && child->kind != ASTKind::DeclarationPart) {
             visit(child);
         }
     }
@@ -569,6 +581,11 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveTypeReference(ASTNode* node)
 
     const TabEntry& entry = symbols->tabAt(index);
     type.type = entry.type;
+    if (entry.type.hasBounds) {
+        type.low = entry.type.low;
+        type.high = entry.type.high;
+        type.hasBounds = true;
+    }
     node->inferredType = type.type;
     node->tabIndex = index;
     return type;
@@ -619,6 +636,9 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveRangeType(ASTNode* node) {
     type.low = low.ordinal;
     type.high = high.ordinal;
     type.hasBounds = low.hasOrdinal && high.hasOrdinal;
+    type.type.low = type.low;
+    type.type.high = type.high;
+    type.type.hasBounds = type.hasBounds;
     node->inferredType = type.type;
     return type;
 }
@@ -696,6 +716,9 @@ SemanticAnalyzer::TypeInfo SemanticAnalyzer::resolveEnumType(ASTNode* node) {
     type.low = 0;
     type.high = static_cast<int>(node->children.size()) - 1;
     type.hasBounds = true;
+    type.type.low = type.low;
+    type.type.high = type.high;
+    type.type.hasBounds = type.hasBounds;
     node->inferredType = type.type;
     return type;
 }

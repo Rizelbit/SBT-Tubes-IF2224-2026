@@ -122,7 +122,7 @@ int SymbolTable::enterBlock() {
     scopeStart_.push_back(static_cast<int>(tab_.size()));
     addrCounter_.push_back(0);
     BTabEntry b;
-    b.last = static_cast<int>(tab_.size()); 
+    b.last = 0;
     b.lpar = 0;
     b.psze = 0;
     b.vsze = 0;
@@ -191,12 +191,11 @@ int SymbolTable::declare(const std::string& name, ObjectKind obj, const Semantic
 }
 
 int SymbolTable::lookup(const std::string& name) const {
-    std::string key = normalize(name);
-    for (int i = static_cast<int>(tab_.size()) - 1; i >= 0; --i) {
-        if (tab_[i].lev == -1) continue;    
-        if (tab_[i].lev > currentLevel_) continue;    
-        if (normalize(tab_[i].identifier) == key)
-            return i;
+    for (auto it = btabStack_.rbegin(); it != btabStack_.rend(); ++it) {
+        int found = lookupInBlock(name, *it);
+        if (found != -1) {
+            return found;
+        }
     }
     return -1;
 }
@@ -205,11 +204,15 @@ int SymbolTable::lookupInBlock(const std::string& name, int blockIdx) const {
     if (blockIdx < 0 || blockIdx >= static_cast<int>(btab_.size())) return -1;
     std::string key = normalize(name);
     int current = btab_[blockIdx].last;
+    int guard = 0;
     while (current > 0 && current < static_cast<int>(tab_.size())) {
         if (normalize(tab_[current].identifier) == key) {
             return current;
         }
         current = tab_[current].link;
+        if (++guard > static_cast<int>(tab_.size())) {
+            break;
+        }
     }
     return -1;
 }
