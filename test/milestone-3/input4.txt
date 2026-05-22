@@ -1,0 +1,18 @@
+program InvalidLookupAndAccess;
+type
+  Point = record
+    x: integer;
+  end;
+var
+  a: integer;
+  a: real;
+  b: boolean;
+  p: Point;
+begin
+  missing := 1;
+  a[1] := 3;
+  p.z := 4;
+
+  if a then
+    b := true;
+end.

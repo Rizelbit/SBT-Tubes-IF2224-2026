@@ -22,7 +22,8 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/ASTPrinter.cpp \
         $(SRCDIR)/TypeSystem.cpp \
         $(SRCDIR)/SymbolTable.cpp \
-        $(SRCDIR)/SemanticAnalyzer.cpp
+        $(SRCDIR)/SemanticAnalyzer.cpp \
+        $(SRCDIR)/SemanticErrors.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 

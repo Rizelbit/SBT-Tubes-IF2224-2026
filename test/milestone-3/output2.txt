@@ -1,0 +1,139 @@
+Semantic Analysis: SUCCESS
+
+Decorated AST:
+Program(ValidControlFlow) [type=Void, tab=44, block=0, level=0]
+├── Declarations [type=Unknown, tab=-1, block=0, level=0]
+│   ├── VarDecl(i) [type=Integer, tab=45, block=0, level=0]
+│   │   └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   ├── VarDecl(best) [type=Integer, tab=46, block=0, level=0]
+│   │   └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   ├── VarDecl(total) [type=Integer, tab=47, block=0, level=0]
+│   │   └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   ├── VarDecl(flag) [type=Boolean, tab=48, block=0, level=0]
+│   │   └── Type(boolean) [type=Boolean, tab=36, block=0, level=0]
+│   └── VarDecl(scores) [type=Array, tab=49, block=0, level=0]
+│       └── ArrayType [type=Array, tab=-1, block=0, level=0]
+│           ├── RangeType [type=Subrange, tab=-1, block=0, level=0]
+│           │   ├── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+│           │   └── Literal(5) [type=Integer, tab=-1, block=0, level=0]
+│           └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+└── Block [type=Unknown, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │   └── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │   └── Literal(0) [type=Integer, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │   └── Literal(0) [type=Integer, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(flag) [type=Boolean, tab=48, block=0, level=0]
+    │   └── Var(true) [type=Boolean, tab=38, block=0, level=0]
+    ├── While [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── BinOp(<=) [type=Boolean, tab=-1, block=0, level=0]
+    │   │   ├── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │   │   └── Literal(5) [type=Integer, tab=-1, block=0, level=0]
+    │   └── Block [type=Unknown, tab=-1, block=0, level=0]
+    │       ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │   ├── ArrayAccess [type=Integer, tab=-1, block=0, level=0]
+    │       │   │   ├── Var(scores) [type=Array, tab=49, block=0, level=0]
+    │       │   │   └── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       │   └── BinOp(*) [type=Integer, tab=-1, block=0, level=0]
+    │       │       ├── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       │       └── Literal(10) [type=Integer, tab=-1, block=0, level=0]
+    │       ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │   ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │       │   └── BinOp(+) [type=Integer, tab=-1, block=0, level=0]
+    │       │       ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │       │       └── ArrayAccess [type=Integer, tab=-1, block=0, level=0]
+    │       │           ├── Var(scores) [type=Array, tab=49, block=0, level=0]
+    │       │           └── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       ├── If [type=Unknown, tab=-1, block=0, level=0]
+    │       │   ├── BinOp(>) [type=Boolean, tab=-1, block=0, level=0]
+    │       │   │   ├── ArrayAccess [type=Integer, tab=-1, block=0, level=0]
+    │       │   │   │   ├── Var(scores) [type=Array, tab=49, block=0, level=0]
+    │       │   │   │   └── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       │   │   └── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │       │   ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │   │   ├── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │       │   │   └── ArrayAccess [type=Integer, tab=-1, block=0, level=0]
+    │       │   │       ├── Var(scores) [type=Array, tab=49, block=0, level=0]
+    │       │   │       └── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       │   └── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │       ├── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │       │       └── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │       ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │   ├── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       │   └── BinOp(+) [type=Integer, tab=-1, block=0, level=0]
+    │       │       ├── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       │       └── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+    │       └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+    ├── For(i) [type=Unknown, tab=45, block=0, level=0]
+    │   ├── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+    │   ├── Literal(5) [type=Integer, tab=-1, block=0, level=0]
+    │   └── Block [type=Unknown, tab=-1, block=0, level=0]
+    │       ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │   ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │       │   └── BinOp(+) [type=Integer, tab=-1, block=0, level=0]
+    │       │       ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │       │       └── Var(i) [type=Integer, tab=45, block=0, level=0]
+    │       └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+    ├── Repeat [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Block [type=Unknown, tab=-1, block=0, level=0]
+    │   │   ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   │   │   ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │   │   │   └── BinOp(-) [type=Integer, tab=-1, block=0, level=0]
+    │   │   │       ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │   │   │       └── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+    │   │   └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+    │   └── BinOp(<=) [type=Boolean, tab=-1, block=0, level=0]
+    │       ├── Var(total) [type=Integer, tab=47, block=0, level=0]
+    │       └── Literal(100) [type=Integer, tab=-1, block=0, level=0]
+    ├── If [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── BinOp(and) [type=Boolean, tab=-1, block=0, level=0]
+    │   │   ├── Var(flag) [type=Boolean, tab=48, block=0, level=0]
+    │   │   └── BinOp(>) [type=Boolean, tab=-1, block=0, level=0]
+    │   │       ├── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │   │       └── Literal(0) [type=Integer, tab=-1, block=0, level=0]
+    │   ├── ProcedureCall(writeln) [type=Unknown, tab=40, block=0, level=0]
+    │   │   ├── Literal(Best score = ) [type=String, tab=-1, block=0, level=0]
+    │   │   └── Var(best) [type=Integer, tab=46, block=0, level=0]
+    │   └── ProcedureCall(writeln) [type=Unknown, tab=40, block=0, level=0]
+    │       └── Literal(No score) [type=String, tab=-1, block=0, level=0]
+    └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+
+Symbol Table - tab:
+idx  identifier      obj         type        ref   nrm   lev   adr   link  init
+---------------------------------------------------------------------------------
+33   Integer         Type        Integer     0     1     0     0     0     no
+34   Real            Type        Real        0     1     0     0     33    no
+35   Char            Type        Char        0     1     0     0     34    no
+36   Boolean         Type        Boolean     0     1     0     0     35    no
+37   String          Type        String      0     1     0     0     36    no
+38   True            Constant    Boolean     0     1     0     1     37    yes
+39   False           Constant    Boolean     0     1     0     0     38    yes
+40   writeln         Procedure   Void        1     1     0     0     39    no
+41   readln          Procedure   Void        2     1     0     0     40    no
+42   write           Procedure   Void        3     1     0     0     41    no
+43   read            Procedure   Void        4     1     0     0     42    no
+44   ValidControlFlowProgram     Void        0     1     0     0     43    no
+45   i               Variable    Integer     0     1     0     0     44    no
+46   best            Variable    Integer     0     1     0     1     45    no
+47   total           Variable    Integer     0     1     0     2     46    no
+48   flag            Variable    Boolean     0     1     0     3     47    no
+49   scores          Variable    Array[ref=1]0     1     0     4     48    no
+
+Symbol Table - btab:
+idx  last    lpar    psze    vsze
+---------------------------------
+0    49      0       0       0
+1    40      0       0       0
+2    41      0       0       0
+3    42      0       0       0
+4    43      0       0       0
+
+Symbol Table - atab:
+idx  xtyp        etyp        eref  low   high  elsz  size
+-----------------------------------------------------------
+1    Subrange    Integer     0     1     5     1     5

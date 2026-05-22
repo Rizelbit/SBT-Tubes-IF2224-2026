@@ -1,0 +1,38 @@
+program ValidControlFlow;
+var
+  i, best, total: integer;
+  flag: boolean;
+  scores: array [1..5] of integer;
+begin
+  i := 1;
+  best := 0;
+  total := 0;
+  flag := true;
+
+  while i <= 5 do
+  begin
+    scores[i] := i * 10;
+    total := total + scores[i];
+
+    if scores[i] > best then
+      best := scores[i]
+    else
+      best := best;
+
+    i := i + 1;
+  end;
+
+  for i := 1 to 5 do
+  begin
+    total := total + i;
+  end;
+
+  repeat
+    total := total - 1;
+  until total <= 100;
+
+  if flag and (best > 0) then
+    writeln('Best score = ', best)
+  else
+    writeln('No score');
+end.

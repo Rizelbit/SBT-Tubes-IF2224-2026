@@ -2,6 +2,7 @@
 #include "Parser.hpp"
 #include "ASTBuilder.hpp"
 #include "ASTPrinter.hpp"
+#include "SemanticAnalyzer.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -36,11 +37,25 @@ int main(int argc, char* argv[]) {
             ASTBuilder builder;
             ASTNode* astRoot = builder.build(parseRoot);
 
-            out << "Semantic Analysis: SUCCESS (Pending Semantic Checking)\n\n";
+            SemanticAnalyzer analyzer;
+            bool semanticSuccess = analyzer.analyze(astRoot);
+
+            out << "Semantic Analysis: " << (semanticSuccess ? "SUCCESS" : "FAILED") << "\n\n";
+            if (!semanticSuccess) {
+                out << "Semantic Errors:\n";
+                for (const SemanticError& error : analyzer.errors()) {
+                    out << "- " << error.message << "\n";
+                }
+                out << "\n";
+            }
+
             out << "Decorated AST:\n";
             ASTPrinter printer;
             printer.print(astRoot, out);
+            out << "\n";
+            analyzer.symbolTable().printTables(out);
 
+            std::cout << "Semantic Analysis: " << (semanticSuccess ? "SUCCESS" : "FAILED") << "\n";
             std::cout << "Pipeline complete. Check " << outputFile << "\n";
             delete astRoot;
         } else {

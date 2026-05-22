@@ -1,0 +1,22 @@
+program InvalidTypesAndOperators;
+var
+  i: integer;
+  r: real;
+  s: string;
+  b: boolean;
+  arr: array [1..3] of integer;
+begin
+  i := r;
+  b := i + s;
+  arr[s] := 1;
+
+  while s do
+  begin
+    i := i + 1;
+  end;
+
+  for s := 1 to 3 do
+  begin
+    i := i + 1;
+  end;
+end.
