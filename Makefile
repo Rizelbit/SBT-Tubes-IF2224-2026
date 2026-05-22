@@ -17,7 +17,6 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/Parser_ControlFlow.cpp \
         $(SRCDIR)/Parser_Expression.cpp \
         $(SRCDIR)/ParseNode.cpp \
-        $(SRCDIR)/AST.cpp \
         $(SRCDIR)/ASTBuilder.cpp \
         $(SRCDIR)/ASTPrinter.cpp \
         $(SRCDIR)/TypeSystem.cpp \

@@ -77,7 +77,8 @@ private:
     ConstantInfo evaluateConstant(ASTNode* node);
 
     bool isRecordFieldContext(ASTNode* node) const;
-    bool containsReturnAssignment(ASTNode* node, const std::string& functionName) const;
+    bool isFunctionResultAssignment(ASTNode* node, const std::string& functionName) const;
+    bool alwaysAssignsFunctionResult(ASTNode* node, const std::string& functionName) const;
     bool isOrdinal(const SemanticType& type) const;
     std::string normalize(const std::string& value) const;
     void reportError(const std::string& message);

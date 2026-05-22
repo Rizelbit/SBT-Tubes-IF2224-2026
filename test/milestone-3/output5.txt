@@ -1,6 +1,7 @@
 Semantic Analysis: FAILED
 
 Semantic Errors:
+- Function 'MaybePositive' does not assign a return value on all control-flow paths
 - Type mismatch: cannot assign Real to Integer
 - Operator '+' cannot be applied to Integer and String
 - Invalid array index: expected Subrange, got String
@@ -20,12 +21,26 @@ Program(InvalidTypesAndOperators) [type=Void, tab=44, block=0, level=0]
 │   │   └── Type(string) [type=String, tab=37, block=0, level=0]
 │   ├── VarDecl(b) [type=Boolean, tab=48, block=0, level=0]
 │   │   └── Type(boolean) [type=Boolean, tab=36, block=0, level=0]
-│   └── VarDecl(arr) [type=Array, tab=49, block=0, level=0]
-│       └── ArrayType [type=Array, tab=-1, block=0, level=0]
-│           ├── RangeType [type=Subrange, tab=-1, block=0, level=0]
-│           │   ├── Literal(1) [type=Integer, tab=-1, block=0, level=0]
-│           │   └── Literal(3) [type=Integer, tab=-1, block=0, level=0]
-│           └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   ├── VarDecl(arr) [type=Array, tab=49, block=0, level=0]
+│   │   └── ArrayType [type=Array, tab=-1, block=0, level=0]
+│   │       ├── RangeType [type=Subrange, tab=-1, block=0, level=0]
+│   │       │   ├── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+│   │       │   └── Literal(3) [type=Integer, tab=-1, block=0, level=0]
+│   │       └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   └── FunctionDecl(MaybePositive) [type=Integer, tab=50, block=5, level=1]
+│       ├── Declarations(parameters) [type=Unknown, tab=-1, block=5, level=1]
+│       │   └── Param(x) [type=Integer, tab=51, block=5, level=1]
+│       │       └── Type(integer) [type=Integer, tab=33, block=5, level=1]
+│       ├── Block [type=Unknown, tab=-1, block=5, level=1]
+│       │   ├── If [type=Unknown, tab=-1, block=5, level=1]
+│       │   │   ├── BinOp(>) [type=Boolean, tab=-1, block=5, level=1]
+│       │   │   │   ├── Var(x) [type=Integer, tab=51, block=5, level=1]
+│       │   │   │   └── Literal(0) [type=Integer, tab=-1, block=5, level=1]
+│       │   │   └── Assign [type=Unknown, tab=-1, block=5, level=1]
+│       │   │       ├── Var(MaybePositive) [type=Integer, tab=50, block=5, level=1]
+│       │   │       └── Var(x) [type=Integer, tab=51, block=5, level=1]
+│       │   └── EmptyStatement [type=Unknown, tab=-1, block=5, level=1]
+│       └── Type(integer) [type=Integer, tab=33, block=0, level=0]
 └── Block [type=Unknown, tab=-1, block=0, level=0]
     ├── Assign [type=Unknown, tab=-1, block=0, level=0]
     │   ├── Var(i) [type=Integer, tab=45, block=0, level=0]
@@ -81,15 +96,18 @@ idx  identifier      obj         type        ref   nrm   lev   adr   link  init
 47   s               Variable    String      0     1     0     3     46    no
 48   b               Variable    Boolean     0     1     0     4     47    no
 49   arr             Variable    Array[ref=1]0     1     0     5     48    no
+50   MaybePositive   Function    Integer     5     1     0     0     49    no
+51   x               Parameter   Integer     0     1     1     0     0     no
 
 Symbol Table - btab:
 idx  last    lpar    psze    vsze
 ---------------------------------
-0    49      0       0       0
+0    50      0       0       0
 1    40      0       0       0
 2    41      0       0       0
 3    42      0       0       0
 4    43      0       0       0
+5    51      0       0       1
 
 Symbol Table - atab:
 idx  xtyp        etyp        eref  low   high  elsz  size

@@ -527,8 +527,8 @@ void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
         visitBlock(body);
     }
 
-    if (!body || !containsReturnAssignment(body, node->value)) {
-        reportError("Function '" + node->value + "' does not assign a return value");
+    if (!body || !alwaysAssignsFunctionResult(body, node->value)) {
+        reportError("Function '" + node->value + "' does not assign a return value on all control-flow paths");
     }
 
     symbols->leaveBlock();
@@ -789,7 +789,7 @@ bool SemanticAnalyzer::isRecordFieldContext(ASTNode* node) const {
     return node && node->kind == ASTKind::FieldDecl;
 }
 
-bool SemanticAnalyzer::containsReturnAssignment(ASTNode* node, const std::string& functionName) const {
+bool SemanticAnalyzer::isFunctionResultAssignment(ASTNode* node, const std::string& functionName) const {
     if (!node) {
         return false;
     }
@@ -801,10 +801,43 @@ bool SemanticAnalyzer::containsReturnAssignment(ASTNode* node, const std::string
         }
     }
 
-    for (ASTNode* child : node->children) {
-        if (containsReturnAssignment(child, functionName)) {
-            return true;
+    return false;
+}
+
+bool SemanticAnalyzer::alwaysAssignsFunctionResult(ASTNode* node, const std::string& functionName) const {
+    if (!node) {
+        return false;
+    }
+
+    if (isFunctionResultAssignment(node, functionName)) {
+        return true;
+    }
+
+    if (node->kind == ASTKind::Block) {
+        for (ASTNode* child : node->children) {
+            if (!child || child->kind == ASTKind::DeclarationPart || child->kind == ASTKind::Empty) {
+                continue;
+            }
+            if (alwaysAssignsFunctionResult(child, functionName)) {
+                return true;
+            }
         }
+        return false;
+    }
+
+    if (node->kind == ASTKind::If) {
+        if (node->children.size() < 3) {
+            return false;
+        }
+        return alwaysAssignsFunctionResult(node->children[1], functionName) &&
+               alwaysAssignsFunctionResult(node->children[2], functionName);
+    }
+
+    if (node->kind == ASTKind::Repeat) {
+        if (node->children.empty()) {
+            return false;
+        }
+        return alwaysAssignsFunctionResult(node->children.front(), functionName);
     }
 
     return false;
