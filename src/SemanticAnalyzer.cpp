@@ -1,4 +1,5 @@
 #include "SemanticAnalyzer.hpp"
+#include "SemanticErrors.hpp"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -78,9 +79,263 @@ void SemanticAnalyzer::visit(ASTNode* node) {
         case ASTKind::Param:
             visitParam(node);
             break;
+        case ASTKind::Assign:
+            visitAssign(node);
+            break;
+        case ASTKind::If:
+            visitIf(node);
+            break;
+        case ASTKind::While:
+            visitWhile(node);
+            break;
+        case ASTKind::Repeat:
+            visitRepeat(node);
+            break;
+        case ASTKind::For:
+            visitFor(node);
+            break;
+        case ASTKind::Case:
+            visitCase(node);
+            break;
+        case ASTKind::ProcedureCall:
+            visitProcedureCall(node);
+            break;
+        case ASTKind::FunctionCall:
+            visitFunctionCall(node);
+            break;
+        case ASTKind::BinOp:
+            visitBinOp(node);
+            break;
+        case ASTKind::UnaryOp:
+            visitUnaryOp(node);
+            break;
+        case ASTKind::Literal:
+            visitLiteral(node);
+            break;
+        case ASTKind::Var:
+            visitVar(node);
+            break;
+        case ASTKind::ArrayAccess:
+            visitArrayAccess(node);
+            break;
+        case ASTKind::FieldAccess:
+            visitFieldAccess(node);
+            break;
         default:
             break;
     }
+}
+void SemanticAnalyzer::visitLiteral(ASTNode* node) {
+    ConstantInfo info = evaluateConstant(node);
+    if (!info.valid) {
+        node->inferredType = makeUnknownType();
+    } else {
+        node->inferredType = info.type;
+    }
+}
+
+void SemanticAnalyzer::visitVar(ASTNode* node) {
+    int index = symbols->lookup(node->value);
+    if (index == -1) {
+        reportError(SemanticErrors::undeclaredIdentifier(node->value));
+        node->inferredType = makeUnknownType();
+        return;
+    }
+    node->tabIndex = index;
+    node->inferredType = symbols->tabAt(index).type;
+}
+
+void SemanticAnalyzer::visitBinOp(ASTNode* node) {
+    if (node->children.size() < 2) return;
+    
+    ASTNode* left = node->children[0];
+    ASTNode* right = node->children[1];
+    visit(left);
+    visit(right);
+    
+    SemanticType resultType = inferBinary(node->value, left->inferredType, right->inferredType);
+    if (resultType.kind == TypeKind::Unknown && left->inferredType.kind != TypeKind::Unknown && right->inferredType.kind != TypeKind::Unknown) {
+        reportError(SemanticErrors::operatorMismatch(node->value, left->inferredType, right->inferredType));
+    }
+    node->inferredType = resultType;
+}
+
+void SemanticAnalyzer::visitUnaryOp(ASTNode* node) {
+    if (node->children.empty()) return;
+    
+    ASTNode* operand = node->children[0];
+    visit(operand);
+    
+    SemanticType resultType = inferUnary(node->value, operand->inferredType);
+    if (resultType.kind == TypeKind::Unknown && operand->inferredType.kind != TypeKind::Unknown) {
+        reportError(SemanticErrors::operatorMismatchUnary(node->value, operand->inferredType));
+    }
+    node->inferredType = resultType;
+}
+
+void SemanticAnalyzer::visitAssign(ASTNode* node) {
+    if (node->children.size() < 2) return;
+    
+    ASTNode* target = node->children[0];
+    ASTNode* value = node->children[1];
+    
+    visit(target);
+    visit(value);
+    
+    if (target->inferredType.kind != TypeKind::Unknown && value->inferredType.kind != TypeKind::Unknown) {
+        if (!isAssignmentCompatible(target->inferredType, value->inferredType)) {
+            reportError(SemanticErrors::typeMismatchAssignment(target->inferredType, value->inferredType));
+        }
+    }
+}
+
+void SemanticAnalyzer::visitIf(ASTNode* node) {
+    if (node->children.empty()) return;
+    ASTNode* condition = node->children[0];
+    visit(condition);
+    if (condition->inferredType.kind != TypeKind::Unknown && condition->inferredType.kind != TypeKind::Boolean) {
+        reportError(SemanticErrors::conditionNotBoolean("if statement"));
+    }
+    for (size_t i = 1; i < node->children.size(); i++) {
+        visit(node->children[i]);
+    }
+}
+
+void SemanticAnalyzer::visitWhile(ASTNode* node) {
+    if (node->children.empty()) return;
+    ASTNode* condition = node->children[0];
+    visit(condition);
+    if (condition->inferredType.kind != TypeKind::Unknown && condition->inferredType.kind != TypeKind::Boolean) {
+        reportError(SemanticErrors::conditionNotBoolean("while statement"));
+    }
+    if (node->children.size() > 1) visit(node->children[1]);
+}
+
+void SemanticAnalyzer::visitRepeat(ASTNode* node) {
+    if (node->children.empty()) return;
+
+    ASTNode* condition = node->children.back(); 
+    for (size_t i = 0; i < node->children.size() - 1; i++) {
+        visit(node->children[i]);
+    }
+    visit(condition);
+    if (condition->inferredType.kind != TypeKind::Unknown && condition->inferredType.kind != TypeKind::Boolean) {
+        reportError(SemanticErrors::conditionNotBoolean("repeat statement"));
+    }
+}
+
+void SemanticAnalyzer::visitFor(ASTNode* node) {
+    // Implementasi untuk ngecek start loop, iterasi stop loop (Assignment Compatible dengan start), 
+    // memastikan variabel index itu ordinal & declared var.
+    int index = symbols->lookup(node->value);
+    if (index == -1) {
+        reportError(SemanticErrors::undeclaredIdentifier(node->value));
+    } else {
+        node->tabIndex = index;
+        SemanticType controlType = symbols->tabAt(index).type;
+        if (!isOrdinal(controlType)) {
+            reportError(SemanticErrors::invalidForControlVar(node->value));
+        }
+    }
+    for (ASTNode* child : node->children) {
+        visit(child);
+    }
+}
+
+void SemanticAnalyzer::visitArrayAccess(ASTNode* node) {
+    if (node->children.empty()) return;
+    ASTNode* arrayNode = node->children[0];
+    visit(arrayNode);
+
+    SemanticType arrayType = arrayNode->inferredType;
+    if (arrayType.kind != TypeKind::Unknown && arrayType.kind != TypeKind::Array) {
+        reportError(SemanticErrors::notAnArray(arrayNode->value));
+        node->inferredType = makeUnknownType();
+        return;
+    }
+
+    if (arrayType.kind == TypeKind::Array) {
+        const ATabEntry& arrayEntry = symbols->atabAt(arrayType.ref);
+         for (size_t i = 1; i < node->children.size(); i++) {
+            ASTNode* indexExpr = node->children[i];
+            visit(indexExpr);
+            if (indexExpr->inferredType.kind != TypeKind::Unknown && !isCompatible(arrayEntry.xtyp, indexExpr->inferredType)) {
+                reportError(SemanticErrors::invalidArrayIndex(arrayEntry.xtyp, indexExpr->inferredType));
+            }
+        }
+        node->inferredType = arrayEntry.etyp;
+    } else {
+        node->inferredType = makeUnknownType();
+    }
+}
+
+void SemanticAnalyzer::visitFieldAccess(ASTNode* node) {
+    if (node->children.empty()) return;
+    ASTNode* recordNode = node->children[0];
+    visit(recordNode);
+
+    SemanticType recType = recordNode->inferredType;
+    if (recType.kind != TypeKind::Unknown && recType.kind != TypeKind::Record) {
+        reportError(SemanticErrors::notARecord(recordNode->value));
+        node->inferredType = makeUnknownType();
+        return;
+    }
+
+    if (recType.kind == TypeKind::Record) {
+        int fieldIdx = symbols->lookupInBlock(node->value, recType.ref);
+        if (fieldIdx == -1) {
+            reportError(SemanticErrors::invalidRecordField(recordNode->value, node->value));
+            node->inferredType = makeUnknownType();
+        } else {
+            node->tabIndex = fieldIdx;
+            node->inferredType = symbols->tabAt(fieldIdx).type;
+        }
+    } else {
+        node->inferredType = makeUnknownType();
+    }
+}
+
+void SemanticAnalyzer::visitProcedureCall(ASTNode* node) {
+    int index = symbols->lookup(node->value);
+    if (index == -1) {
+        reportError(SemanticErrors::undeclaredIdentifier(node->value));
+    } else {
+        node->tabIndex = index;
+        if (symbols->tabAt(index).obj != ObjectKind::Procedure) {
+            reportError(SemanticErrors::notAProcedure(node->value));
+        }
+    }
+    // Lakukan loop args untuk validasi parameter dsb (Abaikan jika writeln/readln yg bisa variadic)
+    for (ASTNode* child : node->children) {
+        visit(child);
+    }
+}
+
+void SemanticAnalyzer::visitFunctionCall(ASTNode* node) {
+    int index = symbols->lookup(node->value);
+    if (index == -1) {
+        reportError(SemanticErrors::undeclaredIdentifier(node->value));
+        node->inferredType = makeUnknownType();
+    } else {
+        node->tabIndex = index;
+        if (symbols->tabAt(index).obj != ObjectKind::Function) {
+            reportError(SemanticErrors::notAFunction(node->value));
+            node->inferredType = makeUnknownType();
+        } else {
+            node->inferredType = symbols->tabAt(index).type;
+        }
+    }
+    for (ASTNode* child : node->children) {
+        visit(child);
+    }
+}
+
+void SemanticAnalyzer::visitCase(ASTNode* node) {
+    for (ASTNode* child : node->children) visit(child);
+}
+
+void SemanticAnalyzer::visitExpression(ASTNode* node) {
+     for (ASTNode* child : node->children) visit(child);
 }
 
 void SemanticAnalyzer::visitProgram(ASTNode* node) {

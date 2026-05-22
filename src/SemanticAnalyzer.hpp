@@ -52,6 +52,22 @@ private:
     void visitFuncDecl(ASTNode* node);
     void visitParam(ASTNode* node);
 
+    void visitAssign(ASTNode* node);
+    void visitIf(ASTNode* node);
+    void visitWhile(ASTNode* node);
+    void visitRepeat(ASTNode* node);
+    void visitFor(ASTNode* node);
+    void visitCase(ASTNode* node);
+    void visitProcedureCall(ASTNode* node);
+    void visitFunctionCall(ASTNode* node);
+    void visitBinOp(ASTNode* node);
+    void visitUnaryOp(ASTNode* node);
+    void visitLiteral(ASTNode* node);
+    void visitVar(ASTNode* node);
+    void visitArrayAccess(ASTNode* node);
+    void visitFieldAccess(ASTNode* node);
+    void visitExpression(ASTNode* node);
+
     TypeInfo resolveType(ASTNode* node);
     TypeInfo resolveTypeReference(ASTNode* node);
     TypeInfo resolveRangeType(ASTNode* node);

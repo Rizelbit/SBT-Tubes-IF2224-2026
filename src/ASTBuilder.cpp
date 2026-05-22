@@ -395,7 +395,11 @@ ASTNode* ASTBuilder::buildExpression(ParseNode* node) {
     if (!node) return nullptr;
 
     if (node->name == "<variable>") return buildVariable(node);
-    if (node->name == "<procedure/function-call>") return buildProcedureCall(node);
+    if (node->name == "<procedure/function-call>") {
+        ASTNode* funcCall = buildProcedureCall(node);
+        funcCall->kind = ASTKind::FunctionCall;
+        return funcCall;
+    }
     if (node->name == "<constant>") return buildConstant(node);
 
     std::string kind = extractTokenKind(node->name);
