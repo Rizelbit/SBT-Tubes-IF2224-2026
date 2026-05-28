@@ -1,0 +1,24 @@
+program RepeatForDemo;
+var
+  i, total: integer;
+begin
+  i := 1;
+  total := 0;
+
+  repeat
+    total := total + i;
+    i := i + 1;
+  until i > 3;
+
+  for i := 1 to 3 do
+  begin
+    total := total + i;
+  end;
+
+  for i := 3 downto 1 do
+  begin
+    total := total + i;
+  end;
+
+  writeln('Total = ', total);
+end.

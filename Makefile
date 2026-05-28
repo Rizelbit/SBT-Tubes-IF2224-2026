@@ -2,7 +2,7 @@ CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 -Isrc
 TARGET   := arion
 SRCDIR   := src
-TESTDIR  := test/milestone-3
+TESTDIR  := test/milestone-4
 
 SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/Token.cpp \
@@ -19,6 +19,7 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/ParseNode.cpp \
         $(SRCDIR)/ASTBuilder.cpp \
         $(SRCDIR)/ASTPrinter.cpp \
+        $(SRCDIR)/IntermediateCode.cpp \
         $(SRCDIR)/TypeSystem.cpp \
         $(SRCDIR)/SymbolTable.cpp \
         $(SRCDIR)/SemanticAnalyzer.cpp \
@@ -37,7 +38,7 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run: all
-	./$(TARGET) $(TESTDIR)/input3.txt $(TESTDIR)/output3.txt
+	./$(TARGET) $(TESTDIR)/input5.txt $(TESTDIR)/output5.txt
 
 clean:
 	rm -f $(OBJS) $(TARGET)

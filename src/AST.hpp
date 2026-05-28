@@ -26,6 +26,7 @@ enum class ASTKind {
 struct ASTNode {
     ASTKind kind;
     std::string value;
+    std::string attribute;
     std::vector<ASTNode*> children;
 
     SemanticType inferredType;
