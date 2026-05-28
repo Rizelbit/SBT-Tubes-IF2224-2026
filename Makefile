@@ -38,7 +38,7 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run: all
-	./$(TARGET) $(TESTDIR)/input3.txt $(TESTDIR)/output3.txt
+	./$(TARGET) $(TESTDIR)/input5.txt $(TESTDIR)/output5.txt
 
 clean:
 	rm -f $(OBJS) $(TARGET)

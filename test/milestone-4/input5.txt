@@ -1,0 +1,18 @@
+program SubprogramDemo;
+var
+  result: integer;
+
+procedure ShowValue(x: integer);
+begin
+  writeln('Value = ', x);
+end;
+
+function DoubleValue(x: integer): integer;
+begin
+  DoubleValue := x * 2;
+end;
+
+begin
+  result := DoubleValue(7);
+  ShowValue(result);
+end.
