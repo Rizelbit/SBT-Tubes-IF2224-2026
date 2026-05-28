@@ -53,6 +53,7 @@ ASTNode* ASTBuilder::clone(ASTNode* node) {
     if (!node) return nullptr;
 
     ASTNode* copy = new ASTNode(node->kind, node->value);
+    copy->attribute = node->attribute;
     copy->inferredType = node->inferredType;
     copy->tabIndex = node->tabIndex;
     copy->blockIndex = node->blockIndex;
@@ -387,6 +388,8 @@ ASTNode* ASTBuilder::buildStatement(ParseNode* node) {
         ASTNode* forNode = new ASTNode(ASTKind::For);
         for (ParseNode* child : firstChild->children) {
             if (isToken(child, "IDENT") && forNode->value.empty()) forNode->value = extractTokenValue(child->name);
+            else if (isToken(child, "TOSY")) forNode->attribute = "to";
+            else if (isToken(child, "DOWNTOSY")) forNode->attribute = "downto";
             else if (child->name == "<expression>") forNode->addChild(buildExpression(child));
             else if (child->name == "<compound-statement>") forNode->addChild(buildBlock(child));
         }

@@ -8,7 +8,7 @@
 #include <string>
 
 int main(int argc, char* argv[]) {
-    const std::string baseDir = "test/milestone-3/";
+    const std::string baseDir = "test/milestone-4/";
 
     std::string inputFile  = (argc > 1) ? argv[1] : (baseDir + "input1.txt");
     std::string outputFile = (argc > 2) ? argv[2] : (baseDir + "output1.txt");
@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
 
         if (parser.isSuccess()) {
             std::cout << "Syntax Analysis: SUCCESS\n";
+            out << "Syntax Analysis: SUCCESS\n";
             
             ASTBuilder builder;
             ASTNode* astRoot = builder.build(parseRoot);
@@ -47,6 +48,8 @@ int main(int argc, char* argv[]) {
                     out << "- " << error.message << "\n";
                 }
                 out << "\n";
+                out << "Intermediate Code: NOT GENERATED\n";
+                out << "Runtime Status: NOT EXECUTED\n\n";
             }
 
             out << "Decorated AST:\n";
@@ -60,7 +63,10 @@ int main(int argc, char* argv[]) {
             delete astRoot;
         } else {
             std::cerr << "Semantic Analysis: FAILED (Syntax Error)\n";
-            out << "Semantic Analysis: FAILED (Syntax Error)\n";
+            out << "Syntax Analysis: FAILED\n";
+            out << "Semantic Analysis: NOT EXECUTED\n";
+            out << "Intermediate Code: NOT GENERATED\n";
+            out << "Runtime Status: NOT EXECUTED\n";
         }
 
         delete parseRoot;

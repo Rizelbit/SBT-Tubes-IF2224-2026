@@ -64,7 +64,15 @@ void ASTPrinter::print(ASTNode* root, std::ostream& out, const std::string& pref
     }
     
     out << kindToString(root->kind);
-    if (!root->value.empty()) out << "(" << root->value << ")";
+    if (!root->value.empty()) {
+        out << "(" << root->value;
+        if (root->kind == ASTKind::For && !root->attribute.empty()) {
+            out << ", direction=" << root->attribute;
+        }
+        out << ")";
+    } else if (!root->attribute.empty()) {
+        out << "(" << root->attribute << ")";
+    }
     
     out << " [type=" << typeKindToString(root->inferredType.kind) 
         << ", tab=" << root->tabIndex 
