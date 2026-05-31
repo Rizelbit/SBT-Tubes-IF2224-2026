@@ -53,6 +53,7 @@ struct ATabEntry {
 };
 
 
+
 int getTypeSize(const SemanticType& t);
 
 class SymbolTable {
@@ -87,6 +88,21 @@ public:
 
     SemanticType resolveTypeName(const std::string& name) const;
     void printTables(std::ostream& out) const;
+
+
+    int typeSize(const SemanticType& type) const;
+
+    int currentAddrCounter() const {
+        if (addrCounter_.empty()) return 0;
+        return addrCounter_.back();
+    }
+
+    void setPsze(int bIdx, int psze) {
+        if (bIdx >= 0 && bIdx < static_cast<int>(btab_.size())) {
+            btab_[bIdx].psze = psze;
+        }
+    }
+
 
 private:
     std::vector<TabEntry>  tab_;

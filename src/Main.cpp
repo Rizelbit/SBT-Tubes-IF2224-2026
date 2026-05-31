@@ -3,6 +3,8 @@
 #include "ASTBuilder.hpp"
 #include "ASTPrinter.hpp"
 #include "SemanticAnalyzer.hpp"
+#include "CodeGenerator.hpp"
+#include "IntermediateCode.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -57,6 +59,20 @@ int main(int argc, char* argv[]) {
             printer.print(astRoot, out);
             out << "\n";
             analyzer.symbolTable().printTables(out);
+
+            if (semanticSuccess) {
+                CodeGenerator cg(analyzer.symbolTable());
+                CodeBuffer buf = cg.generate(astRoot);
+
+                out << "\nIntermediate Code:\n";
+                buf.print(out);
+                out << "\n";
+
+                std::cout << "Intermediate Code: GENERATED (" << buf.instructions().size() << " instructions)\n";
+            } else {
+                out << "Intermediate Code: NOT GENERATED\n";
+                out << "Runtime Status: NOT EXECUTED\n";
+            }
 
             std::cout << "Semantic Analysis: " << (semanticSuccess ? "SUCCESS" : "FAILED") << "\n";
             std::cout << "Pipeline complete. Check " << outputFile << "\n";

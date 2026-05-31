@@ -26,9 +26,9 @@ int getTypeSize(const SemanticType& t) {
         case TypeKind::Subrange:
         case TypeKind::Enumerated: return 1;
         case TypeKind::Real: return 2;
-        case TypeKind::String: return 1;    //
+        case TypeKind::String: return 1;   
         case TypeKind::Array:
-        case TypeKind::Record: return 0;    
+        case TypeKind::Record: return 1;  
         default:
             return 0;
     }
@@ -176,7 +176,7 @@ int SymbolTable::declare(const std::string& name, ObjectKind obj, const Semantic
         bool needsOffset = (obj == ObjectKind::Variable || obj == ObjectKind::Parameter || obj == ObjectKind::VarParam  || obj == ObjectKind::Field);
         if (needsOffset) {
             e.adr = addrCounter_.back();
-            int sz = getTypeSize(type);
+            int sz = typeSize(type);
             addrCounter_.back() += (sz > 0 ? sz : 1);
         } else {
             e.adr = 0;
@@ -327,5 +327,38 @@ void SymbolTable::printTables(std::ostream& out) const {
             << std::setw(6)  << a.elsz
             << a.size
             << "\n";
+    }
+}
+
+int SymbolTable::typeSize(const SemanticType& type) const {
+    switch (type.kind) {
+        case TypeKind::Integer:
+        case TypeKind::Boolean:
+        case TypeKind::Char:
+        case TypeKind::Subrange:
+        case TypeKind::Enumerated:
+            return 1;
+        case TypeKind::Real:
+            return 1;  
+        case TypeKind::String:
+            return 1;   
+        case TypeKind::Array: {
+            int ref = type.ref;
+            if (ref > 0 && ref < static_cast<int>(atab_.size())) {
+                int sz = atab_[ref].size;
+                return (sz > 0) ? sz : 1;
+            }
+            return 1;
+        }
+        case TypeKind::Record: {
+            int ref = type.ref;
+            if (ref > 0 && ref < static_cast<int>(btab_.size())) {
+                int sz = btab_[ref].vsze;
+                return (sz > 0) ? sz : 1;
+            }
+            return 1;
+        }
+        default:
+            return 1;
     }
 }

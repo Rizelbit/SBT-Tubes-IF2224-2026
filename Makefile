@@ -20,6 +20,7 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/ASTBuilder.cpp \
         $(SRCDIR)/ASTPrinter.cpp \
         $(SRCDIR)/IntermediateCode.cpp \
+        $(SRCDIR)/CodeGenerator.cpp \
         $(SRCDIR)/TypeSystem.cpp \
         $(SRCDIR)/SymbolTable.cpp \
         $(SRCDIR)/SemanticAnalyzer.cpp \
@@ -38,7 +39,7 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 run: all
-	./$(TARGET) $(TESTDIR)/input5.txt $(TESTDIR)/output5.txt
+	./$(TARGET) $(TESTDIR)/input1.txt $(TESTDIR)/output1.txt
 
 clean:
 	rm -f $(OBJS) $(TARGET)
