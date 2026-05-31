@@ -23,6 +23,8 @@ namespace OPR {
     constexpr int AND = 15;
     constexpr int OR = 16;
     constexpr int NOT = 17;
+    constexpr int READ = 18;
+    constexpr int READLN = 19;
 }
 
 
@@ -152,6 +154,13 @@ void CodeGenerator::generateSubprogramDecl(ASTNode* node) {
     // catat alamat awal body untuk CAL nanti
     int bodyStart = buf_.currentAddress();
     subprogramAddr_[ti] = bodyStart;
+    auto pending = pendingSubprogramCalls_.find(ti);
+    if (pending != pendingSubprogramCalls_.end()) {
+        for (int callAddress : pending->second) {
+            buf_.patch(callAddress, bodyStart);
+        }
+        pendingSubprogramCalls_.erase(pending);
+    }
 
     // hitung ukuran frame subprogram dari btab
     int bref = procEntry.ref;
@@ -161,6 +170,14 @@ void CodeGenerator::generateSubprogramDecl(ASTNode* node) {
     }
 
     buf_.emit(OpCode::INT, currentLevel_ + 1, frameSize, "alokasi frame " + node->value);
+
+    // TODO: Interpreter harus menyepakati layout return value function.
+    // CAL/RET sudah di-emit, tetapi function result baru bisa divalidasi
+    // end-to-end setelah activation record runtime selesai.
+    std::string previousFunctionName = currentFunctionName_;
+    if (node->kind == ASTKind::FuncDecl) {
+        currentFunctionName_ = normalize(node->value);
+    }
 
     // naikkan level saat generate body subprogram
     currentLevel_++;
@@ -174,6 +191,7 @@ void CodeGenerator::generateSubprogramDecl(ASTNode* node) {
     }
 
     currentLevel_--;
+    currentFunctionName_ = previousFunctionName;
 
     buf_.emit(OpCode::RET, 0, 0, "ret dari " + node->value);
 
@@ -199,8 +217,6 @@ void CodeGenerator::generateAssign(ASTNode* node) {
         LValue lv = resolveLValue(lhs);
         buf_.emit(OpCode::STO, lv.level, lv.address,
                   "simpan ke " + (lhs->value.empty() ? "var" : lhs->value));
-    } else if (rhs->kind == ASTKind::FunctionCall) {
-        generateFunctionCall(rhs);
     } else {
         generateExpression(rhs);
         LValue lv = resolveLValue(lhs);
@@ -513,6 +529,51 @@ void CodeGenerator::generateWrite(ASTNode* node, bool newline) {
     }
 }
 
+void CodeGenerator::generateRead(ASTNode* node, bool newline) {
+    for (ASTNode* child : node->children) {
+        if (child && child->kind == ASTKind::ArrayAccess && !child->children.empty()) {
+            ASTNode* base = child->children[0];
+            int level = 0;
+            if (base && base->tabIndex >= 0 && base->tabIndex < sym_.tabSize()) {
+                level = currentLevel_ - sym_.tabAt(base->tabIndex).lev;
+            }
+            buf_.emit(OpCode::LIT, 0, level, "read target lexical level");
+            resolveLValue(child);
+        } else {
+            LValue lv = resolveLValue(child);
+            buf_.emit(OpCode::LIT, 0, lv.level, "read target lexical level");
+            if (!lv.isStack) {
+                buf_.emit(OpCode::LIT, 0, lv.address, "read target address");
+            }
+        }
+        // TODO: OPR READ/READLN harus pop address lalu level,
+        // membaca input runtime, dan store ke alamat target. Untuk array
+        // indirect, resolveLValue sudah meninggalkan alamat target di stack.
+        buf_.emit(OpCode::OPR, 0, newline ? OPR::READLN : OPR::READ,
+                  (newline ? "readln " : "read ") + child->value);
+    }
+}
+
+void CodeGenerator::emitSubprogramCall(ASTNode* node, const TabEntry& entry) {
+    int ti = node->tabIndex;
+    int diff = currentLevel_ - entry.lev;
+    int bodyAddr = 0;
+
+    auto it = subprogramAddr_.find(ti);
+    if (it != subprogramAddr_.end()) {
+        bodyAddr = it->second;
+    }
+
+    for (ASTNode* child : node->children) {
+        generateExpression(child);
+    }
+
+    int callAddress = buf_.emit(OpCode::CAL, diff, bodyAddr, "call " + node->value);
+    if (it == subprogramAddr_.end()) {
+        pendingSubprogramCalls_[ti].push_back(callAddress);
+    }
+}
+
 
 void CodeGenerator::generateProcedureCall(ASTNode* node) {
     std::string name = normalize(node->value);
@@ -526,37 +587,25 @@ void CodeGenerator::generateProcedureCall(ASTNode* node) {
         return;
     }
     if (name == "readln" || name == "read") {
-    
-        for (ASTNode* child : node->children) {
-            generateExpression(child);  
-        }
+        generateRead(node, name == "readln");
         return;
     }
 
-    // user-defined procedure: emit argumen lalu CAL
+    // User-defined procedure: emit argumen lalu CAL. Parameter binding dan
+    // activation record runtime adalah kontrak bersama dengan Interpreter.
     int ti = node->tabIndex;
     if (ti < 0 || ti >= sym_.tabSize()) return;
     const TabEntry& procEntry = sym_.tabAt(ti);
-    int diff = currentLevel_ - procEntry.lev;
-    auto it = subprogramAddr_.find(ti);
-    int bodyAddr = (it != subprogramAddr_.end()) ? it->second : 0;
-    for (ASTNode* child : node->children) {
-        generateExpression(child);
-    }
-    buf_.emit(OpCode::CAL, diff, bodyAddr, "call " + node->value);
+    emitSubprogramCall(node, procEntry);
 }
 
 void CodeGenerator::generateFunctionCall(ASTNode* node) {
     int ti = node->tabIndex;
     if (ti < 0 || ti >= sym_.tabSize()) return;
     const TabEntry& funcEntry = sym_.tabAt(ti);
-    int diff = currentLevel_ - funcEntry.lev;
-    auto it = subprogramAddr_.find(ti);
-    int bodyAddr = (it != subprogramAddr_.end()) ? it->second : 0;
-    for (ASTNode* child : node->children) {
-        generateExpression(child);
-    }
-    buf_.emit(OpCode::CAL, diff, bodyAddr, "call " + node->value);
+    // TODO: Interpreter harus membuat CAL function meninggalkan
+    // return value di top-of-stack agar expression/assignment bisa memakainya.
+    emitSubprogramCall(node, funcEntry);
 }
 
 void CodeGenerator::generateIf(ASTNode* node) {
@@ -684,7 +733,58 @@ void CodeGenerator::generateFor(ASTNode* node) {
 }
 
 void CodeGenerator::generateCase(ASTNode* node) {
-    for (ASTNode* child : node->children) generateNode(child);
+    if (!node || node->children.empty()) return;
+
+    ASTNode* selector = node->children[0];
+    std::vector<int> endJumps;
+
+    for (size_t i = 1; i < node->children.size(); ++i) {
+        generateCaseBranch(selector, node->children[i], endJumps);
+    }
+
+    int endAddress = buf_.currentAddress();
+    for (int jumpAddress : endJumps) {
+        buf_.patch(jumpAddress, endAddress);
+    }
+}
+
+void CodeGenerator::generateCaseBranch(ASTNode* selector, ASTNode* branch, std::vector<int>& endJumps) {
+    if (!selector || !branch || branch->kind != ASTKind::Case) return;
+
+    std::vector<ASTNode*> labels;
+    std::vector<ASTNode*> statements;
+    std::vector<ASTNode*> nextBranches;
+
+    bool seenStatement = false;
+    for (ASTNode* child : branch->children) {
+        if (!child) continue;
+        if (!seenStatement &&
+            (child->kind == ASTKind::Literal || child->kind == ASTKind::Var)) {
+            labels.push_back(child);
+        } else if (child->kind == ASTKind::Case) {
+            nextBranches.push_back(child);
+        } else {
+            seenStatement = true;
+            statements.push_back(child);
+        }
+    }
+
+    for (ASTNode* label : labels) {
+        generateExpression(selector);
+        generateExpression(label);
+        buf_.emit(OpCode::OPR, 0, OPR::EQL, "case: selector = label");
+
+        int missJump = buf_.emit(OpCode::JPC, 0, 0, "case: next label");
+        for (ASTNode* statement : statements) {
+            generateNode(statement);
+        }
+        endJumps.push_back(buf_.emit(OpCode::JMP, 0, 0, "case: end"));
+        buf_.patch(missJump, buf_.currentAddress());
+    }
+
+    for (ASTNode* nextBranch : nextBranches) {
+        generateCaseBranch(selector, nextBranch, endJumps);
+    }
 }
 
 int CodeGenerator::typeSize(const SemanticType& t) const {

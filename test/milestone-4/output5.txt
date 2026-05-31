@@ -71,3 +71,27 @@ idx  last    lpar    psze    vsze
 Symbol Table - atab:
 idx  xtyp        etyp        eref  low   high  elsz  size
 -----------------------------------------------------------
+
+Intermediate Code:
+0 INT 0 3 ; alokasi frame program
+1 JMP 0 8 ; jmp skip body ShowValue
+2 INT 1 4 ; alokasi frame ShowValue
+3 LIT 0 -1 ; string:Value = 
+4 OPR 0 13 ; write arg 0
+5 LOD 0 3 ; load x
+6 OPR 0 14 ; writeln arg 1
+7 RET 0 0 ; ret dari ShowValue
+8 JMP 0 15 ; jmp skip body DoubleValue
+9 INT 1 4 ; alokasi frame DoubleValue
+10 LOD 0 3 ; load x
+11 LIT 0 2 ; literal int 2
+12 OPR 0 4 ; op *
+13 STO 1 3 ; simpan ke DoubleValue
+14 RET 0 0 ; ret dari DoubleValue
+15 LIT 0 7 ; literal int 7
+16 CAL 0 9 ; call DoubleValue
+17 STO 0 3 ; simpan ke result
+18 LOD 0 3 ; load result
+19 CAL 0 2 ; call ShowValue
+20 RET 0 0 ; akhir program
+

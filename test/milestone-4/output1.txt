@@ -60,3 +60,22 @@ idx  last    lpar    psze    vsze
 Symbol Table - atab:
 idx  xtyp        etyp        eref  low   high  elsz  size
 -----------------------------------------------------------
+
+Intermediate Code:
+0 INT 0 3 ; alokasi frame program
+1 LIT 0 10 ; literal int 10
+2 STO 0 3 ; simpan ke a
+3 LIT 0 5 ; literal int 5
+4 STO 0 4 ; simpan ke b
+5 LOD 0 3 ; load a
+6 LOD 0 4 ; load b
+7 LIT 0 2 ; literal int 2
+8 OPR 0 4 ; op *
+9 OPR 0 2 ; op +
+10 STO 0 5 ; simpan ke c
+11 LIT 0 -1 ; string:Result = 
+12 OPR 0 13 ; write arg 0
+13 LOD 0 5 ; load c
+14 OPR 0 14 ; writeln arg 1
+15 RET 0 0 ; akhir program
+

@@ -86,3 +86,58 @@ idx  last    lpar    psze    vsze
 Symbol Table - atab:
 idx  xtyp        etyp        eref  low   high  elsz  size
 -----------------------------------------------------------
+
+Intermediate Code:
+0 INT 0 3 ; alokasi frame program
+1 LIT 0 1 ; literal int 1
+2 STO 0 3 ; simpan ke i
+3 LIT 0 0 ; literal int 0
+4 STO 0 4 ; simpan ke total
+5 LOD 0 4 ; load total
+6 LOD 0 3 ; load i
+7 OPR 0 2 ; op +
+8 STO 0 4 ; simpan ke total
+9 LOD 0 3 ; load i
+10 LIT 0 1 ; literal int 1
+11 OPR 0 2 ; op +
+12 STO 0 3 ; simpan ke i
+13 LOD 0 3 ; load i
+14 LIT 0 3 ; literal int 3
+15 OPR 0 11 ; op >
+16 JPC 0 5 ; jpc ke awal repeat jika belum selesai
+17 LIT 0 1 ; literal int 1
+18 STO 0 3 ; for: init i
+19 LOD 0 3 ; for: load i
+20 LIT 0 3 ; literal int 3
+21 OPR 0 12 ; for to: cek <= limit
+22 JPC 0 32 ; jpc ke akhir for
+23 LOD 0 4 ; load total
+24 LOD 0 3 ; load i
+25 OPR 0 2 ; op +
+26 STO 0 4 ; simpan ke total
+27 LOD 0 3 ; for: load i for step
+28 LIT 0 1 ; for: step 1
+29 OPR 0 2 ; for to: increment
+30 STO 0 3 ; for: update i
+31 JMP 0 19 ; jmp ke awal for
+32 LIT 0 3 ; literal int 3
+33 STO 0 3 ; for: init i
+34 LOD 0 3 ; for: load i
+35 LIT 0 1 ; literal int 1
+36 OPR 0 10 ; for downto: cek >= limit
+37 JPC 0 47 ; jpc ke akhir for
+38 LOD 0 4 ; load total
+39 LOD 0 3 ; load i
+40 OPR 0 2 ; op +
+41 STO 0 4 ; simpan ke total
+42 LOD 0 3 ; for: load i for step
+43 LIT 0 1 ; for: step 1
+44 OPR 0 3 ; for downto: decrement
+45 STO 0 3 ; for: update i
+46 JMP 0 34 ; jmp ke awal for
+47 LIT 0 -1 ; string:Total = 
+48 OPR 0 13 ; write arg 0
+49 LOD 0 4 ; load total
+50 OPR 0 14 ; writeln arg 1
+51 RET 0 0 ; akhir program
+

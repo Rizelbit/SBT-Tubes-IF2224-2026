@@ -76,7 +76,7 @@ idx  identifier      obj         type        ref   nrm   lev   adr   link  init
 46   y               Field       Integer     0     1     1     1     45    no
 47   Point           Type        Record[ref=5]0     1     0     0     44    no
 48   p               Variable    Record[ref=5]0     1     0     0     47    no
-49   values          Variable    Array[ref=1]0     1     0     1     48    no
+49   values          Variable    Array[ref=1]0     1     0     2     48    no
 
 Symbol Table - btab:
 idx  last    lpar    psze    vsze
@@ -92,3 +92,54 @@ Symbol Table - atab:
 idx  xtyp        etyp        eref  low   high  elsz  size
 -----------------------------------------------------------
 1    Subrange    Integer     0     1     3     1     3
+
+Intermediate Code:
+0 INT 0 3 ; alokasi frame program
+1 LIT 0 4 ; literal int 4
+2 STO 0 3 ; simpan ke x
+3 LIT 0 6 ; literal int 6
+4 STO 0 4 ; simpan ke y
+5 LOD 0 3 ; load p.x
+6 LIT 0 5 ; array base addr (LValue)
+7 LIT 0 1 ; literal int 1
+8 LIT 0 1 ; array low (LValue)
+9 OPR 0 3 ; idx-low (LValue)
+10 OPR 0 2 ; abs addr (LValue)
+11 STO 0 -1 ; simpan ke var
+12 LOD 0 4 ; load p.y
+13 LIT 0 5 ; array base addr (LValue)
+14 LIT 0 2 ; literal int 2
+15 LIT 0 1 ; array low (LValue)
+16 OPR 0 3 ; idx-low (LValue)
+17 OPR 0 2 ; abs addr (LValue)
+18 STO 0 -1 ; simpan ke var
+19 LIT 0 5 ; array base addr 
+20 LIT 0 1 ; literal int 1
+21 LIT 0 1 ; array low bound
+22 OPR 0 3 ; index - low
+23 OPR 0 2 ; array abs addr
+24 LOD 0 -1 ; load array[idx]
+25 LIT 0 5 ; array base addr 
+26 LIT 0 2 ; literal int 2
+27 LIT 0 1 ; array low bound
+28 OPR 0 3 ; index - low
+29 OPR 0 2 ; array abs addr
+30 LOD 0 -1 ; load array[idx]
+31 OPR 0 2 ; op +
+32 LIT 0 5 ; array base addr (LValue)
+33 LIT 0 3 ; literal int 3
+34 LIT 0 1 ; array low (LValue)
+35 OPR 0 3 ; idx-low (LValue)
+36 OPR 0 2 ; abs addr (LValue)
+37 STO 0 -1 ; simpan ke var
+38 LIT 0 -1 ; string:Sum = 
+39 OPR 0 13 ; write arg 0
+40 LIT 0 5 ; array base addr 
+41 LIT 0 3 ; literal int 3
+42 LIT 0 1 ; array low bound
+43 OPR 0 3 ; index - low
+44 OPR 0 2 ; array abs addr
+45 LOD 0 -1 ; load array[idx]
+46 OPR 0 14 ; writeln arg 1
+47 RET 0 0 ; akhir program
+

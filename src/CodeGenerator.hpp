@@ -57,6 +57,9 @@ protected:
     virtual void generateFunctionCall(ASTNode* node);
 
     void generateWrite(ASTNode* node, bool newline);
+    void generateRead(ASTNode* node, bool newline);
+    void generateCaseBranch(ASTNode* selector, ASTNode* branch, std::vector<int>& endJumps);
+    void emitSubprogramCall(ASTNode* node, const TabEntry& entry);
     int typeSize(const SemanticType& t) const;
 
     int oprForBinOp(const std::string& op) const;
@@ -69,6 +72,7 @@ protected:
     std::string currentFunctionName_;
 
     std::unordered_map<int, int> subprogramAddr_;
+    std::unordered_map<int, std::vector<int>> pendingSubprogramCalls_;
 
     static constexpr int FRAME_HEADER = 3;
 };
