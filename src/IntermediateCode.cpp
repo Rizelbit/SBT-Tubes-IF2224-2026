@@ -43,7 +43,7 @@ const std::vector<Instruction>& CodeBuffer::instructions() const {
 void CodeBuffer::print(std::ostream& out) const {
     for (int i = 0; i < static_cast<int>(code.size()); ++i) {
         const Instruction& instruction = code[i];
-        out << std::setw(4) << std::setfill('0') << i << std::setfill(' ')
+        out << i
             << " " << opcodeToString(instruction.op)
             << " " << instruction.level
             << " " << instruction.operand;
