@@ -117,6 +117,7 @@ void CodeGenerator::generateProgram(ASTNode* node) {
         }
     }
 
+    frameSize += maxEndAdr;
     buf_.emit(OpCode::INT, 0, frameSize, "alokasi frame program");
 
     for (ASTNode* child : node->children) {
@@ -603,9 +604,11 @@ void CodeGenerator::generateFunctionCall(ASTNode* node) {
     int ti = node->tabIndex;
     if (ti < 0 || ti >= sym_.tabSize()) return;
     const TabEntry& funcEntry = sym_.tabAt(ti);
-    // TODO: Interpreter harus membuat CAL function meninggalkan
-    // return value di top-of-stack agar expression/assignment bisa memakainya.
     emitSubprogramCall(node, funcEntry);
+    // Baca return value dari slot nama fungsi di frame caller
+    int diff = currentLevel_ - funcEntry.lev;
+    buf_.emit(OpCode::LOD, diff, funcEntry.adr + FRAME_HEADER,
+              "load return value " + node->value);
 }
 
 void CodeGenerator::generateIf(ASTNode* node) {
