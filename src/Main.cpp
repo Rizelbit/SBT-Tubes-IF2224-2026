@@ -5,9 +5,11 @@
 #include "SemanticAnalyzer.hpp"
 #include "CodeGenerator.hpp"
 #include "IntermediateCode.hpp"
+#include "Interpreter.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 int main(int argc, char* argv[]) {
     const std::string baseDir = "test/milestone-4/";
@@ -69,6 +71,32 @@ int main(int argc, char* argv[]) {
                 out << "\n";
 
                 std::cout << "Intermediate Code: GENERATED (" << buf.instructions().size() << " instructions)\n";
+
+                // Build address -> tabIndex mapping for CAL/RET
+                std::unordered_map<int, int> addrToTabIndex;
+                for (const auto& kv : cg.subprogramAddr()) {
+                    addrToTabIndex[kv.second] = kv.first;
+                }
+
+                Interpreter interpreter(buf, &analyzer.symbolTable(), &addrToTabIndex);
+                bool runtimeSuccess = interpreter.run();
+
+                out << "Program Output:\n";
+                out << interpreter.output();
+                if (!interpreter.output().empty() && interpreter.output().back() != '\n') {
+                    out << "\n";
+                }
+                out << "\n";
+
+                if (runtimeSuccess && !interpreter.hasErrors()) {
+                    out << "Runtime Status: SUCCESS\n";
+                } else {
+                    out << "Runtime Status: FAILED\n";
+                    out << "Runtime Error:\n";
+                    for (const auto& err : interpreter.errors()) {
+                        out << "- " << err.message << " at instruction " << err.instructionAddress << "\n";
+                    }
+                }
             } else {
                 out << "Intermediate Code: NOT GENERATED\n";
                 out << "Runtime Status: NOT EXECUTED\n";
