@@ -77,7 +77,7 @@ idx  xtyp        etyp        eref  low   high  elsz  size
 -----------------------------------------------------------
 
 Intermediate Code:
-0 INT 0 3 ; alokasi frame program
+0 INT 0 5 ; alokasi frame program
 1 LIT 0 1 ; literal int 1
 2 STO 0 3 ; simpan ke i
 3 LIT 0 0 ; literal int 0
@@ -110,3 +110,7 @@ Intermediate Code:
 30 OPR 0 14 ; writeln arg 1
 31 RET 0 0 ; akhir program
 
+Program Output:
+Total = 14
+
+Runtime Status: SUCCESS

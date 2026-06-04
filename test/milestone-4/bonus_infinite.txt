@@ -1,0 +1,10 @@
+program InfiniteLoop;
+var
+  i: integer;
+begin
+  i := 0;
+  while true do
+  begin
+    i := i + 1;
+  end;
+end.
