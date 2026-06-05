@@ -16,6 +16,8 @@ public:
     CodeBuffer& buffer() { return buf_; }
     const CodeBuffer& buffer() const { return buf_; }
 
+    const std::unordered_map<int, int>& subprogramAddr() const { return subprogramAddr_; }
+
 protected:
 
     const SymbolTable& sym_;

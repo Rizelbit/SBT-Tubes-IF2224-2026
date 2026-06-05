@@ -173,7 +173,7 @@ int SymbolTable::declare(const std::string& name, ObjectKind obj, const Semantic
     if (adrOverride >= 0) {
         e.adr = adrOverride;
     } else {
-        bool needsOffset = (obj == ObjectKind::Variable || obj == ObjectKind::Parameter || obj == ObjectKind::VarParam  || obj == ObjectKind::Field);
+        bool needsOffset = (obj == ObjectKind::Variable || obj == ObjectKind::Parameter || obj == ObjectKind::VarParam  || obj == ObjectKind::Field || obj == ObjectKind::Function);
         if (needsOffset) {
             e.adr = addrCounter_.back();
             int sz = typeSize(type);

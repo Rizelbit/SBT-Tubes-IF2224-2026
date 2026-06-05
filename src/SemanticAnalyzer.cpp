@@ -466,6 +466,7 @@ void SemanticAnalyzer::visitProcDecl(ASTNode* node) {
     node->blockIndex = blockIndex;
     node->lexicalLevel = symbols->currentLevel();
 
+    int paramSize = 0;
     for (ASTNode* child : node->children) {
         if (!child) {
             continue;
@@ -473,11 +474,13 @@ void SemanticAnalyzer::visitProcDecl(ASTNode* node) {
 
         if (child->kind == ASTKind::DeclarationPart && child->value == "parameters") {
             visitDeclarationPart(child);
+            paramSize = symbols->currentAddrCounter();
         } else if (child->kind == ASTKind::Block) {
             visitBlock(child);
         }
     }
 
+    symbols->setPsze(blockIndex, paramSize);
     symbols->leaveBlock();
 }
 
@@ -507,7 +510,7 @@ void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
     }
 
     node->inferredType = returnType.type;
-    node->tabIndex = symbols->declare(node->value, ObjectKind::Function, returnType.type, 1, 0);
+    node->tabIndex = symbols->declare(node->value, ObjectKind::Function, returnType.type, 1, -1);
 
     if (node->tabIndex == -1) {
         reportError("Redeclaration of identifier '" + node->value + "'");
@@ -519,8 +522,10 @@ void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
     node->blockIndex = blockIndex;
     node->lexicalLevel = symbols->currentLevel();
 
+    int paramSize = 0;
     if (parameterPart) {
         visitDeclarationPart(parameterPart);
+        paramSize = symbols->currentAddrCounter();
     }
 
     if (body) {
@@ -531,6 +536,7 @@ void SemanticAnalyzer::visitFuncDecl(ASTNode* node) {
         reportError("Function '" + node->value + "' does not assign a return value on all control-flow paths");
     }
 
+    symbols->setPsze(blockIndex, paramSize);
     symbols->leaveBlock();
 }
 
