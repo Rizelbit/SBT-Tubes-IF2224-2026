@@ -1,0 +1,275 @@
+<svg width="1030pt" height="1667pt" viewBox="0.00 0.00 1030.00 1667.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(28.8 1638.16)">
+<title>ArionFlow</title>
+<polygon fill="white" stroke="none" points="-28.8,28.8 -28.8,-1638.16 1000.8,-1638.16 1000.8,28.8 -28.8,28.8"/>
+<text xml:space="preserve" text-anchor="middle" x="486" y="-1587.36" font-family="Arial" font-size="20.00">Alur Program Arion Compiler</text>
+<g id="clust1" class="cluster">
+<title>cluster_input</title>
+<path fill="white" stroke="#cbd5e1" d="M330,-1223.68C330,-1223.68 678,-1223.68 678,-1223.68 684,-1223.68 690,-1229.68 690,-1235.68 690,-1235.68 690,-1557.36 690,-1557.36 690,-1563.36 684,-1569.36 678,-1569.36 678,-1569.36 330,-1569.36 330,-1569.36 324,-1569.36 318,-1563.36 318,-1557.36 318,-1557.36 318,-1235.68 318,-1235.68 318,-1229.68 324,-1223.68 330,-1223.68"/>
+<text xml:space="preserve" text-anchor="middle" x="504" y="-1547.36" font-family="Arial" font-size="20.00">Input Handling</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_frontend</title>
+<path fill="white" stroke="#cbd5e1" d="M538,-695.92C538,-695.92 952,-695.92 952,-695.92 958,-695.92 964,-701.92 964,-707.92 964,-707.92 964,-1172.68 964,-1172.68 964,-1178.68 958,-1184.68 952,-1184.68 952,-1184.68 538,-1184.68 538,-1184.68 532,-1184.68 526,-1178.68 526,-1172.68 526,-1172.68 526,-707.92 526,-707.92 526,-701.92 532,-695.92 538,-695.92"/>
+<text xml:space="preserve" text-anchor="middle" x="745" y="-1162.68" font-family="Arial" font-size="20.00">Frontend Fallback</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_backend</title>
+<path fill="white" stroke="#cbd5e1" d="M224,-288.24C224,-288.24 506,-288.24 506,-288.24 512,-288.24 518,-294.24 518,-300.24 518,-300.24 518,-905.92 518,-905.92 518,-911.92 512,-917.92 506,-917.92 506,-917.92 224,-917.92 224,-917.92 218,-917.92 212,-911.92 212,-905.92 212,-905.92 212,-300.24 212,-300.24 212,-294.24 218,-288.24 224,-288.24"/>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-895.92" font-family="Arial" font-size="20.00">Backend</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_output</title>
+<path fill="white" stroke="#cbd5e1" d="M20,-8C20,-8 704,-8 704,-8 710,-8 716,-14 716,-20 716,-20 716,-237.24 716,-237.24 716,-243.24 710,-249.24 704,-249.24 704,-249.24 20,-249.24 20,-249.24 14,-249.24 8,-243.24 8,-237.24 8,-237.24 8,-20 8,-20 8,-14 14,-8 20,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="362" y="-227.24" font-family="Arial" font-size="20.00">Output</text>
+</g>
+<!-- start -->
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#dbeafe" stroke="#2f3a4a" stroke-width="1.2" cx="504" cy="-1511.36" rx="27.86" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="504" y="-1508.06" font-family="Arial" font-size="11.00">Start</text>
+</g>
+<!-- input -->
+<g id="node2" class="node">
+<title>input</title>
+<path fill="#e0f2fe" stroke="#2f3a4a" stroke-width="1.2" d="M581.55,-1438.36C581.55,-1438.36 463.09,-1438.36 463.09,-1438.36 457.09,-1438.36 448.48,-1432.96 445.87,-1427.56 445.87,-1427.56 419.67,-1373.32 419.67,-1373.32 417.06,-1367.92 420.45,-1362.52 426.45,-1362.52 426.45,-1362.52 544.91,-1362.52 544.91,-1362.52 550.91,-1362.52 559.52,-1367.92 562.13,-1373.32 562.13,-1373.32 588.33,-1427.56 588.33,-1427.56 590.94,-1432.96 587.55,-1438.36 581.55,-1438.36"/>
+<text xml:space="preserve" text-anchor="middle" x="504" y="-1403.74" font-family="Arial" font-size="11.00">Baca input file</text>
+<text xml:space="preserve" text-anchor="middle" x="504" y="-1390.54" font-family="Arial" font-size="11.00">(.txt)</text>
+</g>
+<!-- start&#45;&gt;input -->
+<g id="edge1" class="edge">
+<title>start-&gt;input</title>
+<path fill="none" stroke="#475569" d="M504,-1493.04C504,-1493.04 504,-1448.09 504,-1448.09"/>
+<polygon fill="#475569" stroke="#475569" points="506.8,-1448.09 504,-1440.09 501.2,-1448.09 506.8,-1448.09"/>
+</g>
+<!-- checkDecorated -->
+<g id="node3" class="node">
+<title>checkDecorated</title>
+<path fill="#fef3c7" stroke="#2f3a4a" stroke-width="1.2" d="M492.26,-1305.02C492.26,-1305.02 337.35,-1272.1 337.35,-1272.1 331.48,-1270.85 331.48,-1268.35 337.35,-1267.1 337.35,-1267.1 492.26,-1234.18 492.26,-1234.18 498.13,-1232.93 509.87,-1232.93 515.74,-1234.18 515.74,-1234.18 670.65,-1267.1 670.65,-1267.1 676.52,-1268.35 676.52,-1270.85 670.65,-1272.1 670.65,-1272.1 515.74,-1305.02 515.74,-1305.02 509.87,-1306.27 498.13,-1306.27 492.26,-1305.02"/>
+<text xml:space="preserve" text-anchor="middle" x="504" y="-1272.9" font-family="Arial" font-size="11.00">Apakah input berisi</text>
+<text xml:space="preserve" text-anchor="middle" x="504" y="-1259.7" font-family="Arial" font-size="11.00">Decorated AST + Symbol Table?</text>
+</g>
+<!-- input&#45;&gt;checkDecorated -->
+<g id="edge2" class="edge">
+<title>input-&gt;checkDecorated</title>
+<path fill="none" stroke="#475569" d="M504,-1362.24C504,-1362.24 504,-1317.58 504,-1317.58"/>
+<polygon fill="#475569" stroke="#475569" points="506.8,-1317.58 504,-1309.58 501.2,-1317.58 506.8,-1317.58"/>
+</g>
+<!-- readDecorated -->
+<g id="node4" class="node">
+<title>readDecorated</title>
+<path fill="#dcfce7" stroke="#2f3a4a" stroke-width="1.2" d="M481.76,-877.92C481.76,-877.92 284.24,-877.92 284.24,-877.92 278.24,-877.92 272.24,-871.92 272.24,-865.92 272.24,-865.92 272.24,-852 272.24,-852 272.24,-846 278.24,-840 284.24,-840 284.24,-840 481.76,-840 481.76,-840 487.76,-840 493.76,-846 493.76,-852 493.76,-852 493.76,-865.92 493.76,-865.92 493.76,-871.92 487.76,-877.92 481.76,-877.92"/>
+<text xml:space="preserve" text-anchor="middle" x="383" y="-862.26" font-family="Arial" font-size="11.00">DecoratedASTReader</text>
+<text xml:space="preserve" text-anchor="middle" x="383" y="-849.06" font-family="Arial" font-size="11.00">Membangun ulang AST dan SymbolTable</text>
+</g>
+<!-- checkDecorated&#45;&gt;readDecorated -->
+<g id="edge3" class="edge">
+<title>checkDecorated-&gt;readDecorated</title>
+<path fill="none" stroke="#475569" d="M409.68,-1251.16C409.68,-1251.16 409.68,-887.81 409.68,-887.81"/>
+<polygon fill="#475569" stroke="#475569" points="412.48,-887.81 409.68,-879.81 406.88,-887.81 412.48,-887.81"/>
+<text xml:space="preserve" text-anchor="middle" x="434.12" y="-1070.76" font-family="Arial" font-size="10.00">Ya</text>
+</g>
+<!-- sourcePipeline -->
+<g id="node5" class="node">
+<title>sourcePipeline</title>
+<path fill="#f1f5f9" stroke="#2f3a4a" stroke-width="1.2" d="M792.04,-1144.68C792.04,-1144.68 545.96,-1144.68 545.96,-1144.68 539.96,-1144.68 533.96,-1138.68 533.96,-1132.68 533.96,-1132.68 533.96,-1118.76 533.96,-1118.76 533.96,-1112.76 539.96,-1106.76 545.96,-1106.76 545.96,-1106.76 792.04,-1106.76 792.04,-1106.76 798.04,-1106.76 804.04,-1112.76 804.04,-1118.76 804.04,-1118.76 804.04,-1132.68 804.04,-1132.68 804.04,-1138.68 798.04,-1144.68 792.04,-1144.68"/>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-1129.02" font-family="Arial" font-size="11.00">Fallback Source Pipeline</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-1115.82" font-family="Arial" font-size="11.00">Lexer -&gt; Parser -&gt; ASTBuilder -&gt; SemanticAnalyzer</text>
+</g>
+<!-- checkDecorated&#45;&gt;sourcePipeline -->
+<g id="edge4" class="edge">
+<title>checkDecorated-&gt;sourcePipeline</title>
+<path fill="none" stroke="#475569" d="M608.17,-1253.37C608.17,-1253.37 608.17,-1154.36 608.17,-1154.36"/>
+<polygon fill="#475569" stroke="#475569" points="610.97,-1154.36 608.17,-1146.36 605.37,-1154.36 610.97,-1154.36"/>
+<text xml:space="preserve" text-anchor="middle" x="593.23" y="-1195.68" font-family="Arial" font-size="10.00">Tidak</text>
+</g>
+<!-- decoratedReady -->
+<g id="node10" class="node">
+<title>decoratedReady</title>
+<path fill="#dcfce7" stroke="#2f3a4a" stroke-width="1.2" d="M428.86,-748.44C428.86,-748.44 337.14,-748.44 337.14,-748.44 331.14,-748.44 325.14,-742.44 325.14,-736.44 325.14,-736.44 325.14,-722.52 325.14,-722.52 325.14,-716.52 331.14,-710.52 337.14,-710.52 337.14,-710.52 428.86,-710.52 428.86,-710.52 434.86,-710.52 440.86,-716.52 440.86,-722.52 440.86,-722.52 440.86,-736.44 440.86,-736.44 440.86,-742.44 434.86,-748.44 428.86,-748.44"/>
+<text xml:space="preserve" text-anchor="middle" x="383" y="-732.78" font-family="Arial" font-size="11.00">Decorated AST siap</text>
+<text xml:space="preserve" text-anchor="middle" x="383" y="-719.58" font-family="Arial" font-size="11.00">SymbolTable siap</text>
+</g>
+<!-- readDecorated&#45;&gt;decoratedReady -->
+<g id="edge5" class="edge">
+<title>readDecorated-&gt;decoratedReady</title>
+<path fill="none" stroke="#475569" d="M383,-839.58C383,-839.58 383,-758.51 383,-758.51"/>
+<polygon fill="#475569" stroke="#475569" points="385.8,-758.51 383,-750.51 380.2,-758.51 385.8,-758.51"/>
+<text xml:space="preserve" text-anchor="middle" x="445.25" y="-785.04" font-family="Arial" font-size="10.00"> Semantic Analysis skipped </text>
+</g>
+<!-- syntaxSuccess -->
+<g id="node6" class="node">
+<title>syntaxSuccess</title>
+<path fill="#fef3c7" stroke="#2f3a4a" stroke-width="1.2" d="M657.86,-1036.31C657.86,-1036.31 585.22,-1007.29 585.22,-1007.29 579.65,-1005.07 579.65,-1000.61 585.22,-998.39 585.22,-998.39 657.86,-969.37 657.86,-969.37 663.43,-967.15 674.57,-967.15 680.14,-969.37 680.14,-969.37 752.78,-998.39 752.78,-998.39 758.35,-1000.61 758.35,-1005.07 752.78,-1007.29 752.78,-1007.29 680.14,-1036.31 680.14,-1036.31 674.57,-1038.53 663.43,-1038.53 657.86,-1036.31"/>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-1006.14" font-family="Arial" font-size="11.00">Syntax Analysis</text>
+<text xml:space="preserve" text-anchor="middle" x="669" y="-992.94" font-family="Arial" font-size="11.00">SUCCESS?</text>
+</g>
+<!-- sourcePipeline&#45;&gt;syntaxSuccess -->
+<g id="edge6" class="edge">
+<title>sourcePipeline-&gt;syntaxSuccess</title>
+<path fill="none" stroke="#475569" d="M669,-1106.25C669,-1106.25 669,-1050.81 669,-1050.81"/>
+<polygon fill="#475569" stroke="#475569" points="671.8,-1050.81 669,-1042.81 666.2,-1050.81 671.8,-1050.81"/>
+</g>
+<!-- semanticSuccess -->
+<g id="node7" class="node">
+<title>semanticSuccess</title>
+<path fill="#fef3c7" stroke="#2f3a4a" stroke-width="1.2" d="M629.69,-892.88C629.69,-892.88 545.16,-862.96 545.16,-862.96 539.51,-860.96 539.51,-856.96 545.16,-854.96 545.16,-854.96 629.69,-825.04 629.69,-825.04 635.34,-823.04 646.66,-823.04 652.31,-825.04 652.31,-825.04 736.84,-854.96 736.84,-854.96 742.49,-856.96 742.49,-860.96 736.84,-862.96 736.84,-862.96 652.31,-892.88 652.31,-892.88 646.66,-894.88 635.34,-894.88 629.69,-892.88"/>
+<text xml:space="preserve" text-anchor="middle" x="641" y="-862.26" font-family="Arial" font-size="11.00">Semantic Analysis</text>
+<text xml:space="preserve" text-anchor="middle" x="641" y="-849.06" font-family="Arial" font-size="11.00">SUCCESS?</text>
+</g>
+<!-- syntaxSuccess&#45;&gt;semanticSuccess -->
+<g id="edge8" class="edge">
+<title>syntaxSuccess-&gt;semanticSuccess</title>
+<path fill="none" stroke="#475569" d="M661.11,-967.64C661.11,-967.64 661.11,-899.88 661.11,-899.88"/>
+<polygon fill="#475569" stroke="#475569" points="663.91,-899.88 661.11,-891.88 658.31,-899.88 663.91,-899.88"/>
+<text xml:space="preserve" text-anchor="middle" x="661.12" y="-928.92" font-family="Arial" font-size="10.00">Ya</text>
+</g>
+<!-- stopSyntax -->
+<g id="node8" class="node">
+<title>stopSyntax</title>
+<path fill="#fee2e2" stroke="#2f3a4a" stroke-width="1.2" d="M943.55,-884.52C943.55,-884.52 800.45,-884.52 800.45,-884.52 794.45,-884.52 788.45,-878.52 788.45,-872.52 788.45,-872.52 788.45,-845.4 788.45,-845.4 788.45,-839.4 794.45,-833.4 800.45,-833.4 800.45,-833.4 943.55,-833.4 943.55,-833.4 949.55,-833.4 955.55,-839.4 955.55,-845.4 955.55,-845.4 955.55,-872.52 955.55,-872.52 955.55,-878.52 949.55,-884.52 943.55,-884.52"/>
+<text xml:space="preserve" text-anchor="middle" x="872" y="-868.86" font-family="Arial" font-size="11.00">Tulis error syntax</text>
+<text xml:space="preserve" text-anchor="middle" x="872" y="-855.66" font-family="Arial" font-size="11.00">Intermediate Code tidak dibuat</text>
+<text xml:space="preserve" text-anchor="middle" x="872" y="-842.46" font-family="Arial" font-size="11.00">Runtime tidak dijalankan</text>
+</g>
+<!-- syntaxSuccess&#45;&gt;stopSyntax -->
+<g id="edge7" class="edge">
+<title>syntaxSuccess-&gt;stopSyntax</title>
+<path fill="none" stroke="#475569" d="M756.04,-999.28C756.04,-977.13 756.04,-859 756.04,-859 756.04,-859 778.52,-859 778.52,-859"/>
+<polygon fill="#475569" stroke="#475569" points="778.52,-861.8 786.52,-859 778.52,-856.2 778.52,-861.8"/>
+<text xml:space="preserve" text-anchor="middle" x="811.23" y="-928.92" font-family="Arial" font-size="10.00">Tidak</text>
+</g>
+<!-- stopSemantic -->
+<g id="node9" class="node">
+<title>stopSemantic</title>
+<path fill="#fee2e2" stroke="#2f3a4a" stroke-width="1.2" d="M766.55,-755.04C766.55,-755.04 623.45,-755.04 623.45,-755.04 617.45,-755.04 611.45,-749.04 611.45,-743.04 611.45,-743.04 611.45,-715.92 611.45,-715.92 611.45,-709.92 617.45,-703.92 623.45,-703.92 623.45,-703.92 766.55,-703.92 766.55,-703.92 772.55,-703.92 778.55,-709.92 778.55,-715.92 778.55,-715.92 778.55,-743.04 778.55,-743.04 778.55,-749.04 772.55,-755.04 766.55,-755.04"/>
+<text xml:space="preserve" text-anchor="middle" x="695" y="-739.38" font-family="Arial" font-size="11.00">Tulis semantic errors</text>
+<text xml:space="preserve" text-anchor="middle" x="695" y="-726.18" font-family="Arial" font-size="11.00">Intermediate Code tidak dibuat</text>
+<text xml:space="preserve" text-anchor="middle" x="695" y="-712.98" font-family="Arial" font-size="11.00">Runtime tidak dijalankan</text>
+</g>
+<!-- semanticSuccess&#45;&gt;stopSemantic -->
+<g id="edge9" class="edge">
+<title>semanticSuccess-&gt;stopSemantic</title>
+<path fill="none" stroke="#475569" d="M679.8,-834.3C679.8,-834.3 679.8,-764.89 679.8,-764.89"/>
+<polygon fill="#475569" stroke="#475569" points="682.6,-764.89 679.8,-756.89 677,-764.89 682.6,-764.89"/>
+<text xml:space="preserve" text-anchor="middle" x="664.23" y="-785.04" font-family="Arial" font-size="10.00">Tidak</text>
+</g>
+<!-- semanticSuccess&#45;&gt;decoratedReady -->
+<g id="edge10" class="edge">
+<title>semanticSuccess-&gt;decoratedReady</title>
+<path fill="none" stroke="#475569" d="M572.65,-844.8C572.65,-811.12 572.65,-729 572.65,-729 572.65,-729 450.96,-729 450.96,-729"/>
+<polygon fill="#475569" stroke="#475569" points="450.96,-726.2 442.96,-729 450.96,-731.8 450.96,-726.2"/>
+<text xml:space="preserve" text-anchor="middle" x="574.12" y="-785.04" font-family="Arial" font-size="10.00">Ya</text>
+</g>
+<!-- end -->
+<g id="node17" class="node">
+<title>end</title>
+<ellipse fill="#dbeafe" stroke="#2f3a4a" stroke-width="1.2" cx="646" cy="-34" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="646" y="-30.7" font-family="Arial" font-size="11.00">End</text>
+</g>
+<!-- stopSyntax&#45;&gt;end -->
+<g id="edge17" class="edge">
+<title>stopSyntax-&gt;end</title>
+<path fill="none" stroke="#475569" d="M872,-833.18C872,-692.92 872,-28 872,-28 872,-28 681.44,-28 681.44,-28"/>
+<polygon fill="#475569" stroke="#475569" points="681.44,-25.2 673.44,-28 681.44,-30.8 681.44,-25.2"/>
+</g>
+<!-- stopSemantic&#45;&gt;end -->
+<g id="edge18" class="edge">
+<title>stopSemantic-&gt;end</title>
+<path fill="none" stroke="#475569" d="M743.16,-703.71C743.16,-578.54 743.16,-40 743.16,-40 743.16,-40 681.55,-40 681.55,-40"/>
+<polygon fill="#475569" stroke="#475569" points="681.55,-37.2 673.55,-40 681.55,-42.8 681.55,-37.2"/>
+</g>
+<!-- codegen -->
+<g id="node11" class="node">
+<title>codegen</title>
+<path fill="#ede9fe" stroke="#2f3a4a" stroke-width="1.2" d="M459.59,-648.92C459.59,-648.92 284.41,-648.92 284.41,-648.92 278.41,-648.92 272.41,-642.92 272.41,-636.92 272.41,-636.92 272.41,-623 272.41,-623 272.41,-617 278.41,-611 284.41,-611 284.41,-611 459.59,-611 459.59,-611 465.59,-611 471.59,-617 471.59,-623 471.59,-623 471.59,-636.92 471.59,-636.92 471.59,-642.92 465.59,-648.92 459.59,-648.92"/>
+<text xml:space="preserve" text-anchor="middle" x="372" y="-633.26" font-family="Arial" font-size="11.00">CodeGenerator</text>
+<text xml:space="preserve" text-anchor="middle" x="372" y="-620.06" font-family="Arial" font-size="11.00">Decorated AST -&gt; Intermediate Code</text>
+</g>
+<!-- decoratedReady&#45;&gt;codegen -->
+<g id="edge11" class="edge">
+<title>decoratedReady-&gt;codegen</title>
+<path fill="none" stroke="#475569" d="M383,-710.29C383,-710.29 383,-658.94 383,-658.94"/>
+<polygon fill="#475569" stroke="#475569" points="385.8,-658.94 383,-650.94 380.2,-658.94 385.8,-658.94"/>
+</g>
+<!-- ic -->
+<g id="node12" class="node">
+<title>ic</title>
+<path fill="#f5f3ff" stroke="#2f3a4a" stroke-width="1.2" d="M497.7,-556C497.7,-556 291.52,-556 291.52,-556 285.52,-556 275.82,-551.27 272.13,-546.54 272.13,-546.54 227.69,-489.62 227.69,-489.62 223.99,-484.89 226.3,-480.16 232.3,-480.16 232.3,-480.16 438.48,-480.16 438.48,-480.16 444.48,-480.16 454.18,-484.89 457.87,-489.62 457.87,-489.62 502.31,-546.54 502.31,-546.54 506.01,-551.27 503.7,-556 497.7,-556"/>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-521.38" font-family="Arial" font-size="11.00">Cetak Intermediate Code</text>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-508.18" font-family="Arial" font-size="11.00">ke output file</text>
+</g>
+<!-- codegen&#45;&gt;ic -->
+<g id="edge12" class="edge">
+<title>codegen-&gt;ic</title>
+<path fill="none" stroke="#475569" d="M372,-610.47C372,-610.47 372,-565.85 372,-565.85"/>
+<polygon fill="#475569" stroke="#475569" points="374.8,-565.85 372,-557.85 369.2,-565.85 374.8,-565.85"/>
+</g>
+<!-- interpreter -->
+<g id="node13" class="node">
+<title>interpreter</title>
+<path fill="#ffedd5" stroke="#2f3a4a" stroke-width="1.2" d="M427.67,-425.16C427.67,-425.16 302.33,-425.16 302.33,-425.16 296.33,-425.16 290.33,-419.16 290.33,-413.16 290.33,-413.16 290.33,-399.24 290.33,-399.24 290.33,-393.24 296.33,-387.24 302.33,-387.24 302.33,-387.24 427.67,-387.24 427.67,-387.24 433.67,-387.24 439.67,-393.24 439.67,-399.24 439.67,-399.24 439.67,-413.16 439.67,-413.16 439.67,-419.16 433.67,-425.16 427.67,-425.16"/>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-409.5" font-family="Arial" font-size="11.00">Interpreter / Stack Machine</text>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-396.3" font-family="Arial" font-size="11.00">Eksekusi instruksi IC</text>
+</g>
+<!-- ic&#45;&gt;interpreter -->
+<g id="edge13" class="edge">
+<title>ic-&gt;interpreter</title>
+<path fill="none" stroke="#475569" d="M365,-479.58C365,-479.58 365,-435.11 365,-435.11"/>
+<polygon fill="#475569" stroke="#475569" points="367.8,-435.11 365,-427.11 362.2,-435.11 367.8,-435.11"/>
+</g>
+<!-- runtimeCheck -->
+<g id="node14" class="node">
+<title>runtimeCheck</title>
+<path fill="#fef3c7" stroke="#2f3a4a" stroke-width="1.2" d="M353.24,-329.87C353.24,-329.87 287.42,-316.61 287.42,-316.61 281.53,-315.42 281.53,-313.06 287.42,-311.87 287.42,-311.87 353.24,-298.61 353.24,-298.61 359.12,-297.42 370.88,-297.42 376.76,-298.61 376.76,-298.61 442.58,-311.87 442.58,-311.87 448.47,-313.06 448.47,-315.42 442.58,-316.61 442.58,-316.61 376.76,-329.87 376.76,-329.87 370.88,-331.06 359.12,-331.06 353.24,-329.87"/>
+<text xml:space="preserve" text-anchor="middle" x="365" y="-310.94" font-family="Arial" font-size="11.00">Runtime Error?</text>
+</g>
+<!-- interpreter&#45;&gt;runtimeCheck -->
+<g id="edge14" class="edge">
+<title>interpreter-&gt;runtimeCheck</title>
+<path fill="none" stroke="#475569" d="M365,-386.7C365,-386.7 365,-342.29 365,-342.29"/>
+<polygon fill="#475569" stroke="#475569" points="367.8,-342.29 365,-334.29 362.2,-342.29 367.8,-342.29"/>
+</g>
+<!-- runtimeSuccess -->
+<g id="node15" class="node">
+<title>runtimeSuccess</title>
+<path fill="#dcfce7" stroke="#2f3a4a" stroke-width="1.2" d="M318.35,-196.04C318.35,-196.04 92.04,-196.04 92.04,-196.04 86.04,-196.04 76.16,-191.47 72.27,-186.89 72.27,-186.89 23.42,-129.35 23.42,-129.35 19.53,-124.77 21.65,-120.2 27.65,-120.2 27.65,-120.2 253.96,-120.2 253.96,-120.2 259.96,-120.2 269.84,-124.77 273.73,-129.35 273.73,-129.35 322.58,-186.89 322.58,-186.89 326.47,-191.47 324.35,-196.04 318.35,-196.04"/>
+<text xml:space="preserve" text-anchor="middle" x="173" y="-161.42" font-family="Arial" font-size="11.00">Cetak Program Output</text>
+<text xml:space="preserve" text-anchor="middle" x="173" y="-148.22" font-family="Arial" font-size="11.00">Runtime Status: SUCCESS</text>
+</g>
+<!-- runtimeCheck&#45;&gt;runtimeSuccess -->
+<g id="edge16" class="edge">
+<title>runtimeCheck-&gt;runtimeSuccess</title>
+<path fill="none" stroke="#475569" d="M303,-308.31C303,-308.31 303,-205.86 303,-205.86"/>
+<polygon fill="#475569" stroke="#475569" points="305.8,-205.86 303,-197.86 300.2,-205.86 305.8,-205.86"/>
+<text xml:space="preserve" text-anchor="middle" x="244.23" y="-260.24" font-family="Arial" font-size="10.00">Tidak</text>
+</g>
+<!-- runtimeFailed -->
+<g id="node16" class="node">
+<title>runtimeFailed</title>
+<path fill="#fee2e2" stroke="#2f3a4a" stroke-width="1.2" d="M695.77,-209.24C695.77,-209.24 451.29,-209.24 451.29,-209.24 445.29,-209.24 435.94,-204.27 432.58,-199.3 432.58,-199.3 376.95,-116.94 376.95,-116.94 373.59,-111.97 376.23,-107 382.23,-107 382.23,-107 626.71,-107 626.71,-107 632.71,-107 642.06,-111.97 645.42,-116.94 645.42,-116.94 701.05,-199.3 701.05,-199.3 704.41,-204.27 701.77,-209.24 695.77,-209.24"/>
+<text xml:space="preserve" text-anchor="middle" x="539" y="-168.02" font-family="Arial" font-size="11.00">Cetak Program Output parsial</text>
+<text xml:space="preserve" text-anchor="middle" x="539" y="-154.82" font-family="Arial" font-size="11.00">Runtime Status: FAILED</text>
+<text xml:space="preserve" text-anchor="middle" x="539" y="-141.62" font-family="Arial" font-size="11.00">Runtime Error detail</text>
+</g>
+<!-- runtimeCheck&#45;&gt;runtimeFailed -->
+<g id="edge15" class="edge">
+<title>runtimeCheck-&gt;runtimeFailed</title>
+<path fill="none" stroke="#475569" d="M412.29,-305.4C412.29,-305.4 412.29,-179.69 412.29,-179.69"/>
+<polygon fill="#475569" stroke="#475569" points="415.09,-179.69 412.29,-171.69 409.49,-179.69 415.09,-179.69"/>
+<text xml:space="preserve" text-anchor="middle" x="525.12" y="-260.24" font-family="Arial" font-size="10.00">Ya</text>
+</g>
+<!-- runtimeSuccess&#45;&gt;end -->
+<g id="edge20" class="edge">
+<title>runtimeSuccess-&gt;end</title>
+<path fill="none" stroke="#475569" d="M173,-119.87C173,-83.4 173,-34 173,-34 173,-34 609.01,-34 609.01,-34"/>
+<polygon fill="#475569" stroke="#475569" points="609.01,-36.8 617.01,-34 609.01,-31.2 609.01,-36.8"/>
+</g>
+<!-- runtimeFailed&#45;&gt;end -->
+<g id="edge19" class="edge">
+<title>runtimeFailed-&gt;end</title>
+<path fill="none" stroke="#475569" d="M646,-116.79C646,-116.79 646,-61.8 646,-61.8"/>
+<polygon fill="#475569" stroke="#475569" points="648.8,-61.8 646,-53.8 643.2,-61.8 648.8,-61.8"/>
+</g>
+</g>
+</svg>
