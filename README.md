@@ -1,7 +1,7 @@
 # Tugas Besar IF2224 Teori Bahasa Formal dan Otomata
 ![FOTO KELOMPOK](SBT_assset.png)
 
-## Milestone 3: Semantic Analysis
+## Milestone 4: Intermediate Code and Interpreter
 
 ### 1. Identitas Kelompok
 **Kelompok: SBT-Tubes-IF2224-2026**
@@ -11,15 +11,32 @@
 * 13524102 - Manuel Timothy Silalahi
 
 ### 2. Deskripsi Program
-Program ini adalah **Semantic Analyzer** untuk bahasa pemrograman *Arion*, yang dibangun sebagai pemenuhan Milestone 3 Tugas Besar IF2224. Program ini merupakan kelanjutan dari Milestone 1 (Lexical Analyzer) dan Milestone 2 (Syntax Analyzer/Parser). Pada milestone ini, program tidak hanya memastikan struktur sintaks source code valid, tetapi juga menganalisis makna program melalui pembentukan **Abstract Syntax Tree (AST)**, dekorasi AST, pengelolaan **Symbol Table**, serta pengecekan tipe dan scope.
+Program ini adalah **Intermediate Code Generator** dan **Interpreter** untuk bahasa pemrograman *Arion*, yang dibangun sebagai pemenuhan Milestone 4 Tugas Besar IF2224. Program ini merupakan kelanjutan dari Milestone 1 (Lexical Analyzer), Milestone 2 (Syntax Analyzer/Parser), dan Milestone 3 (Semantic Analyzer).
 
-Semantic Analyzer diimplementasikan secara modular menggunakan bahasa **C++ standar GNU**. Program memproses source code Arion melalui pipeline Lexer → Parser → AST Builder → Semantic Analyzer. Hasil akhir program berupa **Decorated AST**, daftar **Semantic Error** jika ditemukan, serta tabel simbol `tab`, `btab`, dan `atab` yang mencatat identifier, blok/scope, serta tipe array. Program menerima source code Arion dalam format `.txt`, kemudian mencetak hasil semantic analysis ke terminal dan menyimpannya ke dalam berkas keluaran `.txt`.
+Pada milestone ini, masukan utama program adalah **Decorated AST** beserta **Symbol Table** hasil analisis semantik. Decorated AST tersebut diterjemahkan menjadi **Intermediate Code** berbasis *stack machine*, kemudian dieksekusi oleh **Interpreter** untuk menghasilkan output nyata program Arion, khususnya output dari `write` dan `writeln`.
+
+Program diimplementasikan secara modular menggunakan bahasa **C++ standar GNU**. Komponen utama Milestone 4 mencakup pembaca Decorated AST, representasi instruksi intermediate code, code generator, runtime value, runtime error manager, dan interpreter berbasis stack. Program juga menangani beberapa kondisi *runtime error* sebagai bagian dari bonus, seperti *division by zero*, *invalid memory access*, *execution step limit*, dan *stack overflow*.
+
+Alur utama Milestone 4:
+```text
+Decorated AST + Symbol Table
+-> DecoratedASTReader
+-> CodeGenerator
+-> Intermediate Code
+-> Interpreter
+-> Program Output + Runtime Status
+```
+
+Program masih mempertahankan pipeline dari source code Arion sebagai fallback internal untuk kebutuhan debugging atau pembuatan Decorated AST:
+```text
+Lexer -> Parser -> ASTBuilder -> SemanticAnalyzer -> CodeGenerator -> Interpreter
+```
 
 ### 3. Requirements
 Untuk mengompilasi dan menjalankan program ini, diperlukan perangkat lunak berikut:
 * **GNU C++ Compiler (GCC):** Kompilator `g++` yang mendukung standar C++17 atau lebih baru.
 * **Make Utility:** Dibutuhkan untuk mengeksekusi skrip kompilasi otomatis (`Makefile`).
-* **Sistem Operasi:** Bebas (Linux, Windows menggunakan MinGW/WSL, atau macOS).
+* **Sistem Operasi:** Linux atau Windows menggunakan WSL. Pengujian utama dilakukan melalui WSL.
 
 ### 4. Cara Instalasi dan Penggunaan Program
 
@@ -35,20 +52,31 @@ Untuk mengompilasi dan menjalankan program ini, diperlukan perangkat lunak berik
    ```bash
    make
    ```
-   Perintah ini akan mengompilasi seluruh berkas C++ modular (Lexer, Parser, AST, Symbol Table, Type System, dan Semantic Analyzer) menjadi sebuah *executable* bernama `arion`.
+   Perintah ini akan mengompilasi seluruh berkas C++ modular menjadi sebuah *executable* bernama `arion`.
 
 3. **Cara Menjalankan Program**
-   Letakkan file input source code Arion di dalam direktori `test/milestone-3/`, kemudian jalankan:
+   Letakkan file input Decorated AST di dalam direktori `test/milestone-4/`, kemudian jalankan:
    ```bash
    ./arion <nama_file_input.txt> <nama_file_output.txt>
    ```
-   *Contoh Eksekusi Pengujian:*
+   Contoh eksekusi pengujian:
    ```bash
    ./arion input1.txt output1.txt
    ```
-   Hasil semantic analysis akan disimpan di `test/milestone-3/output1.txt`. Program juga dapat dijalankan menggunakan path lengkap:
+   Jika nama file tidak menggunakan path lengkap, program akan membaca dan menulis file pada direktori `test/milestone-4/`.
+
+   Program juga dapat dijalankan menggunakan path lengkap:
    ```bash
-   ./arion test/milestone-3/input1.txt test/milestone-3/output1.txt
+   ./arion test/milestone-4/input1.txt test/milestone-4/output1.txt
+   ```
+
+   Format output Milestone 4 berisi:
+   ```text
+   Input Mode
+   Intermediate Code
+   Program Output
+   Runtime Status
+   Runtime Error, jika ada
    ```
 
 4. **Membersihkan File Build**
@@ -62,32 +90,40 @@ SBT-Tubes-IF2224-2026/
 ├── Makefile
 ├── README.md
 ├── ARAHAN.md
-├── Spesifikasi Milestone 3 - Tubes IF2224 TBFO.pdf
+├── Spesifikasi Milestone 4 - Tubes IF2224 TBFO.pdf
+├── Lampiran Spesifikasi Milestone 4 - Tubes IF2224 TBFO - Guidebook Konvensi Intermediate Code.pdf
 ├── src/
-│   ├── Token.hpp / Token.cpp              (Definisi token dan TokenType)
-│   ├── Lexer.hpp / Lexer.cpp              (Dispatcher utama Lexer)
-│   ├── Lexer_Literals.cpp                 (DFA untuk literal: int, real, char, string)
-│   ├── Lexer_Operators.cpp                (DFA untuk operator dan komparasi)
-│   ├── Lexer_Keywords.cpp                 (DFA untuk keyword dan identifier)
-│   ├── Lexer_DelimsComments.cpp           (DFA untuk delimiter dan komentar)
-│   ├── ParseNode.hpp / ParseNode.cpp      (Struktur data node Parse Tree)
-│   ├── Parser.hpp                         (Deklarasi kelas Parser)
-│   ├── Parser.cpp                         (Utilitas inti: match, peekToken, reportError)
-│   ├── Parser_Core.cpp                    (program, block, statement, statement-list)
-│   ├── Parser_Declarations.cpp            (const, type, var, array, record, enum, range)
-│   ├── Parser_ControlFlow.cpp             (if, case, while, repeat, for, procedure, function)
-│   ├── Parser_Expression.cpp              (expression, term, factor, variable, assignment, call)
-│   ├── AST.hpp / AST.cpp                  (Struktur data AST dan anotasi semantic)
-│   ├── ASTBuilder.hpp / ASTBuilder.cpp    (Konversi Parse Tree menjadi AST)
-│   ├── ASTPrinter.hpp / ASTPrinter.cpp    (Pencetak Decorated AST)
-│   ├── TypeSystem.hpp / TypeSystem.cpp    (Aturan type compatibility dan inferensi tipe)
-│   ├── SymbolTable.hpp / SymbolTable.cpp  (Implementasi tab, btab, atab, dan scope lookup)
-│   ├── SemanticAnalyzer.hpp / .cpp        (Visitor semantic analysis)
-│   ├── SemanticErrors.hpp / .cpp          (Format pesan semantic error)
-│   └── Main.cpp                           (Entry point program)
+│   ├── Token.hpp / Token.cpp                (Definisi token dan TokenType)
+│   ├── Lexer.hpp / Lexer.cpp                (Dispatcher utama Lexer)
+│   ├── Lexer_Literals.cpp                   (DFA untuk literal: int, real, char, string)
+│   ├── Lexer_Operators.cpp                  (DFA untuk operator dan komparasi)
+│   ├── Lexer_Keywords.cpp                   (DFA untuk keyword dan identifier)
+│   ├── Lexer_DelimsComments.cpp             (DFA untuk delimiter dan komentar)
+│   ├── ParseNode.hpp / ParseNode.cpp        (Struktur data node Parse Tree)
+│   ├── Parser.hpp                           (Deklarasi kelas Parser)
+│   ├── Parser.cpp                           (Utilitas inti: match, peekToken, reportError)
+│   ├── Parser_Core.cpp                      (program, block, statement, statement-list)
+│   ├── Parser_Declarations.cpp              (const, type, var, array, record, enum, range)
+│   ├── Parser_ControlFlow.cpp               (if, case, while, repeat, for, procedure, function)
+│   ├── Parser_Expression.cpp                (expression, term, factor, variable, assignment, call)
+│   ├── AST.hpp                              (Struktur data AST dan anotasi semantik)
+│   ├── ASTBuilder.hpp / ASTBuilder.cpp      (Konversi Parse Tree menjadi AST)
+│   ├── ASTPrinter.hpp / ASTPrinter.cpp      (Pencetak Decorated AST)
+│   ├── DecoratedASTReader.hpp / .cpp        (Pembaca input Decorated AST dan Symbol Table)
+│   ├── TypeSystem.hpp / TypeSystem.cpp      (Aturan type compatibility dan inferensi tipe)
+│   ├── SymbolTable.hpp / SymbolTable.cpp    (Implementasi tab, btab, atab, dan scope lookup)
+│   ├── SemanticAnalyzer.hpp / .cpp          (Visitor semantic analysis)
+│   ├── SemanticErrors.hpp / .cpp            (Format pesan semantic error)
+│   ├── IntermediateCode.hpp / .cpp          (OpCode, Instruction, CodeBuffer, dan printer IC)
+│   ├── CodeGenerator.hpp / CodeGenerator.cpp (Translasi Decorated AST menjadi Intermediate Code)
+│   ├── RuntimeValue.hpp / RuntimeValue.cpp  (Representasi nilai runtime)
+│   ├── RuntimeErrors.hpp / RuntimeErrors.cpp (Error runtime dan error manager)
+│   ├── Interpreter.hpp / Interpreter.cpp    (Virtual machine berbasis stack)
+│   └── Main.cpp                             (Entry point program)
 ├── doc/
 │   ├── Laporan-1-SBT.pdf
-│   └── Laporan-2-SBT.pdf
+│   ├── Laporan-2-SBT.pdf
+│   └── Laporan-3-SBT.pdf
 └── test/
     ├── milestone-1/
     │   ├── input1.txt ... input5.txt
@@ -95,9 +131,12 @@ SBT-Tubes-IF2224-2026/
     ├── milestone-2/
     │   ├── input1.txt ... input5.txt
     │   └── output1.txt ... output5.txt
-    └── milestone-3/
-        ├── input1.txt ... input5.txt
-        └── output1.txt ... output5.txt
+    ├── milestone-3/
+    │   ├── input1.txt ... input5.txt
+    │   └── output1.txt ... output5.txt
+    └── milestone-4/
+        ├── input1.txt ... input9.txt
+        └── output1.txt ... output9.txt
 ```
 
 ### 6. Pembagian Tugas
@@ -119,3 +158,9 @@ SBT-Tubes-IF2224-2026/
 * **13524036 - Edward David Rumahorbo (25%)**: Mengembangkan Type System (`TypeSystem.hpp/cpp`), Symbol Table (`SymbolTable.hpp/cpp`), predefined identifiers, serta representasi `tab`, `btab`, dan `atab`.
 * **13524056 - Reinhard Alfonzo Hutabarat (25%)**: Mengembangkan semantic visitor untuk deklarasi dan tipe data (`SemanticAnalyzer.hpp/cpp`), mencakup const, type, var, array, record, procedure, function, parameter, dan validasi scope deklarasi.
 * **13524102 - Manuel Timothy Silalahi (25%)**: Mengembangkan semantic visitor untuk statement dan expression (`SemanticAnalyzer.cpp`, `SemanticErrors.hpp/cpp`), mencakup assignment, operator, if, while, repeat, for, procedure/function call, array access, record field access, serta error handling.
+
+#### Milestone 4 — Intermediate Code and Interpreter
+* **13524032 - Juan Oloando Simanungkalit (25%)**: Mengembangkan infrastruktur Intermediate Code (`IntermediateCode.hpp/cpp`), `OpCode`, `Instruction`, `CodeBuffer`, printer IC, integrasi pipeline pada `Main.cpp`, integrasi `Makefile`, struktur testcase Milestone 4, serta pembaruan README dan dokumentasi penggunaan.
+* **13524036 - Edward David Rumahorbo (25%)**: Mengembangkan Code Generator untuk deklarasi, ekspresi, assignment, variable access, array access, record field access, serta perbaikan ukuran tipe dan layout memori pada `CodeGenerator.hpp/cpp` dan `SymbolTable.hpp/cpp`.
+* **13524056 - Reinhard Alfonzo Hutabarat (25%)**: Mengembangkan Code Generator untuk control flow, procedure, function, return value function, procedure/function call, serta predefined IO (`write`, `writeln`, `read`, `readln`) pada `CodeGenerator.hpp/cpp`.
+* **13524102 - Manuel Timothy Silalahi (25%)**: Mengembangkan Interpreter, runtime memory, stack machine, `RuntimeValue.hpp/cpp`, `RuntimeErrors.hpp/cpp`, eksekusi instruksi, output capture, runtime error handling, serta bonus runtime safety seperti stack overflow, stack underflow, invalid jump, invalid memory access, division by zero, invalid call frame, dan execution step limit.
