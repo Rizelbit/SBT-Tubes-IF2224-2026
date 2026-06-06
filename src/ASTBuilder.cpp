@@ -400,22 +400,29 @@ ASTNode* ASTBuilder::buildStatement(ParseNode* node) {
         ASTNode* caseNode = new ASTNode(ASTKind::Case);
         for (ParseNode* child : firstChild->children) {
             if (child->name == "<expression>") caseNode->addChild(buildExpression(child));
-            else if (child->name == "<case-block>") caseNode->addChild(buildStatement(child));
-        }
-        return caseNode;
-    }
-
-    if (firstChild->name == "<case-block>") {
-        ASTNode* caseNode = new ASTNode(ASTKind::Case);
-        for (ParseNode* child : firstChild->children) {
-            if (child->name == "<constant>") caseNode->addChild(buildConstant(child));
-            else if (child->name == "<statement>") caseNode->addChild(buildStatement(child));
-            else if (child->name == "<case-block>") caseNode->addChild(buildStatement(child));
+            else if (child->name == "<case-block>") caseNode->addChild(buildCaseBlock(child));
         }
         return caseNode;
     }
 
     return new ASTNode(ASTKind::Empty);
+}
+
+ASTNode* ASTBuilder::buildCaseBlock(ParseNode* node) {
+    ASTNode* caseNode = new ASTNode(ASTKind::Case);
+    if (!node) return caseNode;
+
+    for (ParseNode* child : node->children) {
+        if (child->name == "<constant>") {
+            caseNode->addChild(buildConstant(child));
+        } else if (child->name == "<statement>") {
+            caseNode->addChild(buildStatement(child));
+        } else if (child->name == "<case-block>") {
+            caseNode->addChild(buildCaseBlock(child));
+        }
+    }
+
+    return caseNode;
 }
 
 ASTNode* ASTBuilder::buildExpression(ParseNode* node) {

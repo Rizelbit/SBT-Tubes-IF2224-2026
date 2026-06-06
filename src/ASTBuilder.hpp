@@ -21,6 +21,7 @@ private:
     ASTNode* buildRecordFieldPart(ParseNode* node);
     ASTNode* buildBlock(ParseNode* node);
     ASTNode* buildStatement(ParseNode* node);
+    ASTNode* buildCaseBlock(ParseNode* node);
     ASTNode* buildExpression(ParseNode* node);
     ASTNode* buildVariable(ParseNode* node);
     ASTNode* buildProcedureCall(ParseNode* node);

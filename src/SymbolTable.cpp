@@ -117,6 +117,30 @@ void SymbolTable::initPredefined() {
     addProc("read");
 }
 
+void SymbolTable::loadFromTables(const std::vector<TabEntry>& tab,
+                                 const std::vector<BTabEntry>& btab,
+                                 const std::vector<ATabEntry>& atab) {
+    tab_ = tab;
+    btab_ = btab;
+    atab_ = atab;
+
+    if (btab_.empty()) {
+        btab_.push_back({0, 0, 0, 0});
+    }
+    if (atab_.empty()) {
+        atab_.push_back({});
+    }
+
+    scopeStart_.clear();
+    addrCounter_.clear();
+    btabStack_.clear();
+
+    scopeStart_.push_back(33);
+    addrCounter_.push_back(0);
+    btabStack_.push_back(0);
+    currentLevel_ = 0;
+}
+
 int SymbolTable::enterBlock() {
     currentLevel_++;
     scopeStart_.push_back(static_cast<int>(tab_.size()));

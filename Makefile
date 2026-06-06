@@ -19,6 +19,7 @@ SRCS := $(SRCDIR)/Main.cpp \
         $(SRCDIR)/ParseNode.cpp \
         $(SRCDIR)/ASTBuilder.cpp \
         $(SRCDIR)/ASTPrinter.cpp \
+        $(SRCDIR)/DecoratedASTReader.cpp \
         $(SRCDIR)/IntermediateCode.cpp \
         $(SRCDIR)/CodeGenerator.cpp \
         $(SRCDIR)/TypeSystem.cpp \

@@ -88,6 +88,9 @@ public:
 
     SemanticType resolveTypeName(const std::string& name) const;
     void printTables(std::ostream& out) const;
+    void loadFromTables(const std::vector<TabEntry>& tab,
+                        const std::vector<BTabEntry>& btab,
+                        const std::vector<ATabEntry>& atab);
 
 
     int typeSize(const SemanticType& type) const;

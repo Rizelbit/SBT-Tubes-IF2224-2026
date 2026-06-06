@@ -1,5 +1,5 @@
-Syntax Analysis: SUCCESS
-Semantic Analysis: SUCCESS
+Input Mode: DECORATED AST
+Semantic Analysis: SKIPPED (Decorated AST input)
 
 Decorated AST:
 Program(CompositeDemo) [type=Void, tab=44, block=0, level=0]
@@ -67,10 +67,10 @@ idx  identifier      obj         type        ref   nrm   lev   adr   link  init
 37   String          Type        String      0     1     0     0     36    no
 38   True            Constant    Boolean     0     1     0     1     37    yes
 39   False           Constant    Boolean     0     1     0     0     38    yes
-40   writeln         Procedure   Void        1     1     0     0     39    no
-41   readln          Procedure   Void        2     1     0     0     40    no
-42   write           Procedure   Void        3     1     0     0     41    no
-43   read            Procedure   Void        4     1     0     0     42    no
+40   writeln         Procedure   Void[ref=1] 1     1     0     0     39    no
+41   readln          Procedure   Void[ref=2] 2     1     0     0     40    no
+42   write           Procedure   Void[ref=3] 3     1     0     0     41    no
+43   read            Procedure   Void[ref=4] 4     1     0     0     42    no
 44   CompositeDemo   Program     Void        0     1     0     0     43    no
 45   x               Field       Integer     0     1     1     0     0     no
 46   y               Field       Integer     0     1     1     1     45    no

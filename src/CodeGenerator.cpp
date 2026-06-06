@@ -172,9 +172,6 @@ void CodeGenerator::generateSubprogramDecl(ASTNode* node) {
 
     buf_.emit(OpCode::INT, currentLevel_ + 1, frameSize, "alokasi frame " + node->value);
 
-    // TODO: Interpreter harus menyepakati layout return value function.
-    // CAL/RET sudah di-emit, tetapi function result baru bisa divalidasi
-    // end-to-end setelah activation record runtime selesai.
     std::string previousFunctionName = currentFunctionName_;
     if (node->kind == ASTKind::FuncDecl) {
         currentFunctionName_ = normalize(node->value);
@@ -547,9 +544,8 @@ void CodeGenerator::generateRead(ASTNode* node, bool newline) {
                 buf_.emit(OpCode::LIT, 0, lv.address, "read target address");
             }
         }
-        // TODO: OPR READ/READLN harus pop address lalu level,
-        // membaca input runtime, dan store ke alamat target. Untuk array
-        // indirect, resolveLValue sudah meninggalkan alamat target di stack.
+        // OPR READ/READLN membaca input runtime dan menyimpan ke target.
+        // Untuk array indirect, resolveLValue sudah meninggalkan alamat target di stack.
         buf_.emit(OpCode::OPR, 0, newline ? OPR::READLN : OPR::READ,
                   (newline ? "readln " : "read ") + child->value);
     }

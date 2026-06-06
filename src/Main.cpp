@@ -3,6 +3,7 @@
 #include "ASTBuilder.hpp"
 #include "ASTPrinter.hpp"
 #include "SemanticAnalyzer.hpp"
+#include "DecoratedASTReader.hpp"
 #include "CodeGenerator.hpp"
 #include "IntermediateCode.hpp"
 #include "Interpreter.hpp"
@@ -10,6 +11,48 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+
+namespace {
+
+bool generateAndRun(ASTNode* astRoot, const SymbolTable& symbols, std::ofstream& out) {
+    CodeGenerator cg(symbols);
+    CodeBuffer buf = cg.generate(astRoot);
+
+    out << "\nIntermediate Code:\n";
+    buf.print(out);
+    out << "\n";
+
+    std::cout << "Intermediate Code: GENERATED (" << buf.instructions().size() << " instructions)\n";
+
+    std::unordered_map<int, int> addrToTabIndex;
+    for (const auto& kv : cg.subprogramAddr()) {
+        addrToTabIndex[kv.second] = kv.first;
+    }
+
+    Interpreter interpreter(buf, &symbols, &addrToTabIndex);
+    bool runtimeSuccess = interpreter.run();
+
+    out << "Program Output:\n";
+    out << interpreter.output();
+    if (!interpreter.output().empty() && interpreter.output().back() != '\n') {
+        out << "\n";
+    }
+    out << "\n";
+
+    if (runtimeSuccess && !interpreter.hasErrors()) {
+        out << "Runtime Status: SUCCESS\n";
+        return true;
+    }
+
+    out << "Runtime Status: FAILED\n";
+    out << "Runtime Error:\n";
+    for (const auto& err : interpreter.errors()) {
+        out << "- " << err.message << " at instruction " << err.instructionAddress << "\n";
+    }
+    return false;
+}
+
+} // namespace
 
 int main(int argc, char* argv[]) {
     const std::string baseDir = "test/milestone-4/";
@@ -31,6 +74,25 @@ int main(int argc, char* argv[]) {
     }
 
     try {
+        DecoratedASTReader decoratedReader;
+        if (decoratedReader.canRead(inputFile)) {
+            DecoratedASTInput decorated = decoratedReader.read(inputFile);
+
+            std::cout << "Input Mode: DECORATED AST\n";
+            out << "Input Mode: DECORATED AST\n";
+            out << "Semantic Analysis: SKIPPED (Decorated AST input)\n\n";
+
+            out << "Decorated AST:\n";
+            ASTPrinter printer;
+            printer.print(decorated.root, out);
+            out << "\n";
+            decorated.symbolTable.printTables(out);
+
+            generateAndRun(decorated.root, decorated.symbolTable, out);
+            std::cout << "Pipeline complete. Check " << outputFile << "\n";
+            return 0;
+        }
+
         Lexer lexer(inputFile);
         Parser parser(lexer);
         ParseNode* parseRoot = parser.parse();
@@ -63,40 +125,7 @@ int main(int argc, char* argv[]) {
             analyzer.symbolTable().printTables(out);
 
             if (semanticSuccess) {
-                CodeGenerator cg(analyzer.symbolTable());
-                CodeBuffer buf = cg.generate(astRoot);
-
-                out << "\nIntermediate Code:\n";
-                buf.print(out);
-                out << "\n";
-
-                std::cout << "Intermediate Code: GENERATED (" << buf.instructions().size() << " instructions)\n";
-
-                // Build address -> tabIndex mapping for CAL/RET
-                std::unordered_map<int, int> addrToTabIndex;
-                for (const auto& kv : cg.subprogramAddr()) {
-                    addrToTabIndex[kv.second] = kv.first;
-                }
-
-                Interpreter interpreter(buf, &analyzer.symbolTable(), &addrToTabIndex);
-                bool runtimeSuccess = interpreter.run();
-
-                out << "Program Output:\n";
-                out << interpreter.output();
-                if (!interpreter.output().empty() && interpreter.output().back() != '\n') {
-                    out << "\n";
-                }
-                out << "\n";
-
-                if (runtimeSuccess && !interpreter.hasErrors()) {
-                    out << "Runtime Status: SUCCESS\n";
-                } else {
-                    out << "Runtime Status: FAILED\n";
-                    out << "Runtime Error:\n";
-                    for (const auto& err : interpreter.errors()) {
-                        out << "- " << err.message << " at instruction " << err.instructionAddress << "\n";
-                    }
-                }
+                generateAndRun(astRoot, analyzer.symbolTable(), out);
             } else {
                 out << "Intermediate Code: NOT GENERATED\n";
                 out << "Runtime Status: NOT EXECUTED\n";

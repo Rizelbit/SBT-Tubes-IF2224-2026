@@ -64,7 +64,11 @@ Value mulValues(const Value& a, const Value& b) {
 }
 
 Value divValues(const Value& a, const Value& b) {
-    if (isReal(a) || isReal(b)) return toReal(a) / toReal(b);
+    if (isReal(a) || isReal(b)) {
+        double br = toReal(b);
+        if (br == 0.0) throw std::runtime_error("Division by zero");
+        return toReal(a) / br;
+    }
     int bi = toInt(b);
     if (bi == 0) throw std::runtime_error("Division by zero");
     return toInt(a) / bi;

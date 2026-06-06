@@ -1,0 +1,75 @@
+Input Mode: DECORATED AST
+Semantic Analysis: SKIPPED (Decorated AST input)
+
+Decorated AST:
+Program(RuntimeInfiniteLoopDemo) [type=Void, tab=44, block=0, level=0]
+├── Declarations [type=Unknown, tab=-1, block=0, level=0]
+│   └── VarDecl(x) [type=Integer, tab=45, block=0, level=0]
+│       └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+└── Block [type=Unknown, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(x) [type=Integer, tab=45, block=0, level=0]
+    │   └── Literal(0) [type=Integer, tab=-1, block=0, level=0]
+    ├── While [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(true) [type=Boolean, tab=38, block=0, level=0]
+    │   └── Block [type=Unknown, tab=-1, block=0, level=0]
+    │       ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │       │   ├── Var(x) [type=Integer, tab=45, block=0, level=0]
+    │       │   └── BinOp(+) [type=Integer, tab=-1, block=0, level=0]
+    │       │       ├── Var(x) [type=Integer, tab=45, block=0, level=0]
+    │       │       └── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+    │       └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+    ├── ProcedureCall(writeln) [type=Unknown, tab=40, block=0, level=0]
+    │   └── Literal(Should not reach here) [type=String, tab=-1, block=0, level=0]
+    └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+
+Symbol Table - tab:
+idx  identifier      obj         type        ref   nrm   lev   adr   link  init
+---------------------------------------------------------------------------------
+33   Integer         Type        Integer     0     1     0     0     0     no
+34   Real            Type        Real        0     1     0     0     33    no
+35   Char            Type        Char        0     1     0     0     34    no
+36   Boolean         Type        Boolean     0     1     0     0     35    no
+37   String          Type        String      0     1     0     0     36    no
+38   True            Constant    Boolean     0     1     0     1     37    yes
+39   False           Constant    Boolean     0     1     0     0     38    yes
+40   writeln         Procedure   Void[ref=1] 1     1     0     0     39    no
+41   readln          Procedure   Void[ref=2] 2     1     0     0     40    no
+42   write           Procedure   Void[ref=3] 3     1     0     0     41    no
+43   read            Procedure   Void[ref=4] 4     1     0     0     42    no
+44   RuntimeInfiniteLoopDemoProgram     Void        0     1     0     0     43    no
+45   x               Variable    Integer     0     1     0     0     44    no
+
+Symbol Table - btab:
+idx  last    lpar    psze    vsze
+---------------------------------
+0    45      0       0       0
+1    40      0       0       0
+2    41      0       0       0
+3    42      0       0       0
+4    43      0       0       0
+
+Symbol Table - atab:
+idx  xtyp        etyp        eref  low   high  elsz  size
+-----------------------------------------------------------
+
+Intermediate Code:
+0 INT 0 4 ; alokasi frame program
+1 LIT 0 0 ; literal int 0
+2 STO 0 3 ; simpan ke x
+3 LIT 0 1 ; const true
+4 JPC 0 10 ; jpc ke akhir while
+5 LOD 0 3 ; load x
+6 LIT 0 1 ; literal int 1
+7 OPR 0 2 ; op +
+8 STO 0 3 ; simpan ke x
+9 JMP 0 3 ; jmp ke awal while
+10 LIT 0 -1 ; string:Should not reach here
+11 OPR 0 14 ; writeln arg 0
+12 RET 0 0 ; akhir program
+
+Program Output:
+
+Runtime Status: FAILED
+Runtime Error:
+- Execution step limit exceeded at instruction 8

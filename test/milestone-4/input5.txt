@@ -1,18 +1,71 @@
-program SubprogramDemo;
-var
-  result: integer;
+Decorated AST:
+Program(SubprogramDemo) [type=Void, tab=44, block=0, level=0]
+├── Declarations [type=Unknown, tab=-1, block=0, level=0]
+│   ├── VarDecl(result) [type=Integer, tab=45, block=0, level=0]
+│   │   └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   ├── ProcedureDecl(ShowValue) [type=Procedure, tab=46, block=5, level=1]
+│   │   ├── Declarations(parameters) [type=Unknown, tab=-1, block=5, level=1]
+│   │   │   └── Param(x) [type=Integer, tab=47, block=5, level=1]
+│   │   │       └── Type(integer) [type=Integer, tab=33, block=5, level=1]
+│   │   └── Block [type=Unknown, tab=-1, block=5, level=1]
+│   │       ├── ProcedureCall(writeln) [type=Unknown, tab=40, block=5, level=1]
+│   │       │   ├── Literal(Value = ) [type=String, tab=-1, block=5, level=1]
+│   │       │   └── Var(x) [type=Integer, tab=47, block=5, level=1]
+│   │       └── EmptyStatement [type=Unknown, tab=-1, block=5, level=1]
+│   └── FunctionDecl(DoubleValue) [type=Integer, tab=48, block=6, level=1]
+│       ├── Declarations(parameters) [type=Unknown, tab=-1, block=6, level=1]
+│       │   └── Param(x) [type=Integer, tab=49, block=6, level=1]
+│       │       └── Type(integer) [type=Integer, tab=33, block=6, level=1]
+│       ├── Block [type=Unknown, tab=-1, block=6, level=1]
+│       │   ├── Assign [type=Unknown, tab=-1, block=6, level=1]
+│       │   │   ├── Var(DoubleValue) [type=Integer, tab=48, block=6, level=1]
+│       │   │   └── BinOp(*) [type=Integer, tab=-1, block=6, level=1]
+│       │   │       ├── Var(x) [type=Integer, tab=49, block=6, level=1]
+│       │   │       └── Literal(2) [type=Integer, tab=-1, block=6, level=1]
+│       │   └── EmptyStatement [type=Unknown, tab=-1, block=6, level=1]
+│       └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+└── Block [type=Unknown, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── Var(result) [type=Integer, tab=45, block=0, level=0]
+    │   └── FunctionCall(DoubleValue) [type=Integer, tab=48, block=0, level=0]
+    │       └── Literal(7) [type=Integer, tab=-1, block=0, level=0]
+    ├── ProcedureCall(ShowValue) [type=Unknown, tab=46, block=0, level=0]
+    │   └── Var(result) [type=Integer, tab=45, block=0, level=0]
+    └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
 
-procedure ShowValue(x: integer);
-begin
-  writeln('Value = ', x);
-end;
+Symbol Table - tab:
+idx  identifier      obj         type        ref   nrm   lev   adr   link  init
+---------------------------------------------------------------------------------
+33   Integer         Type        Integer     0     1     0     0     0     no
+34   Real            Type        Real        0     1     0     0     33    no
+35   Char            Type        Char        0     1     0     0     34    no
+36   Boolean         Type        Boolean     0     1     0     0     35    no
+37   String          Type        String      0     1     0     0     36    no
+38   True            Constant    Boolean     0     1     0     1     37    yes
+39   False           Constant    Boolean     0     1     0     0     38    yes
+40   writeln         Procedure   Void        1     1     0     0     39    no
+41   readln          Procedure   Void        2     1     0     0     40    no
+42   write           Procedure   Void        3     1     0     0     41    no
+43   read            Procedure   Void        4     1     0     0     42    no
+44   SubprogramDemo  Program     Void        0     1     0     0     43    no
+45   result          Variable    Integer     0     1     0     0     44    no
+46   ShowValue       Procedure   Procedure   5     1     0     0     45    no
+47   x               Parameter   Integer     0     1     1     0     0     no
+48   DoubleValue     Function    Integer     6     1     0     1     46    no
+49   x               Parameter   Integer     0     1     1     0     0     no
 
-function DoubleValue(x: integer): integer;
-begin
-  DoubleValue := x * 2;
-end;
+Symbol Table - btab:
+idx  last    lpar    psze    vsze
+---------------------------------
+0    48      0       0       0
+1    40      0       0       0
+2    41      0       0       0
+3    42      0       0       0
+4    43      0       0       0
+5    47      0       1       1
+6    49      0       1       1
 
-begin
-  result := DoubleValue(7);
-  ShowValue(result);
-end.
+Symbol Table - atab:
+idx  xtyp        etyp        eref  low   high  elsz  size
+-----------------------------------------------------------
+

@@ -1,0 +1,42 @@
+Decorated AST:
+Program(RuntimeStackOverflowDemo) [type=Void, tab=44, block=0, level=0]
+├── Declarations [type=Unknown, tab=-1, block=0, level=0]
+│   └── ProcedureDecl(Recurse) [type=Procedure, tab=45, block=5, level=1]
+│       └── Block [type=Unknown, tab=-1, block=5, level=1]
+│           ├── ProcedureCall(Recurse) [type=Unknown, tab=45, block=5, level=1]
+│           └── EmptyStatement [type=Unknown, tab=-1, block=5, level=1]
+└── Block [type=Unknown, tab=-1, block=0, level=0]
+    ├── ProcedureCall(Recurse) [type=Unknown, tab=45, block=0, level=0]
+    └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+
+Symbol Table - tab:
+idx  identifier      obj         type        ref   nrm   lev   adr   link  init
+---------------------------------------------------------------------------------
+33   Integer         Type        Integer     0     1     0     0     0     no
+34   Real            Type        Real        0     1     0     0     33    no
+35   Char            Type        Char        0     1     0     0     34    no
+36   Boolean         Type        Boolean     0     1     0     0     35    no
+37   String          Type        String      0     1     0     0     36    no
+38   True            Constant    Boolean     0     1     0     1     37    yes
+39   False           Constant    Boolean     0     1     0     0     38    yes
+40   writeln         Procedure   Void        1     1     0     0     39    no
+41   readln          Procedure   Void        2     1     0     0     40    no
+42   write           Procedure   Void        3     1     0     0     41    no
+43   read            Procedure   Void        4     1     0     0     42    no
+44   RuntimeStackOverflowDemoProgram     Void        0     1     0     0     43    no
+45   Recurse         Procedure   Procedure   5     1     0     0     44    no
+
+Symbol Table - btab:
+idx  last    lpar    psze    vsze
+---------------------------------
+0    45      0       0       0
+1    40      0       0       0
+2    41      0       0       0
+3    42      0       0       0
+4    43      0       0       0
+5    0       0       0       0
+
+Symbol Table - atab:
+idx  xtyp        etyp        eref  low   high  elsz  size
+-----------------------------------------------------------
+

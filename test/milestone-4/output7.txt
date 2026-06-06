@@ -1,0 +1,74 @@
+Input Mode: DECORATED AST
+Semantic Analysis: SKIPPED (Decorated AST input)
+
+Decorated AST:
+Program(RuntimeInvalidMemoryDemo) [type=Void, tab=44, block=0, level=0]
+├── Declarations [type=Unknown, tab=-1, block=0, level=0]
+│   ├── TypeDecl(Numbers) [type=Array, tab=45, block=0, level=0]
+│   │   └── ArrayType [type=Array, tab=-1, block=0, level=0]
+│   │       ├── RangeType [type=Subrange, tab=-1, block=0, level=0]
+│   │       │   ├── Literal(1) [type=Integer, tab=-1, block=0, level=0]
+│   │       │   └── Literal(3) [type=Integer, tab=-1, block=0, level=0]
+│   │       └── Type(integer) [type=Integer, tab=33, block=0, level=0]
+│   └── VarDecl(values) [type=Array, tab=46, block=0, level=0]
+│       └── Type(Numbers) [type=Array, tab=45, block=0, level=0]
+└── Block [type=Unknown, tab=-1, block=0, level=0]
+    ├── Assign [type=Unknown, tab=-1, block=0, level=0]
+    │   ├── ArrayAccess [type=Integer, tab=-1, block=0, level=0]
+    │   │   ├── Var(values) [type=Array, tab=46, block=0, level=0]
+    │   │   └── Literal(100000) [type=Integer, tab=-1, block=0, level=0]
+    │   └── Literal(7) [type=Integer, tab=-1, block=0, level=0]
+    ├── ProcedureCall(writeln) [type=Unknown, tab=40, block=0, level=0]
+    │   └── Literal(Should not reach here) [type=String, tab=-1, block=0, level=0]
+    └── EmptyStatement [type=Unknown, tab=-1, block=0, level=0]
+
+Symbol Table - tab:
+idx  identifier      obj         type        ref   nrm   lev   adr   link  init
+---------------------------------------------------------------------------------
+33   Integer         Type        Integer     0     1     0     0     0     no
+34   Real            Type        Real        0     1     0     0     33    no
+35   Char            Type        Char        0     1     0     0     34    no
+36   Boolean         Type        Boolean     0     1     0     0     35    no
+37   String          Type        String      0     1     0     0     36    no
+38   True            Constant    Boolean     0     1     0     1     37    yes
+39   False           Constant    Boolean     0     1     0     0     38    yes
+40   writeln         Procedure   Void[ref=1] 1     1     0     0     39    no
+41   readln          Procedure   Void[ref=2] 2     1     0     0     40    no
+42   write           Procedure   Void[ref=3] 3     1     0     0     41    no
+43   read            Procedure   Void[ref=4] 4     1     0     0     42    no
+44   RuntimeInvalidMemoryDemoProgram     Void        0     1     0     0     43    no
+45   Numbers         Type        Array[ref=1]0     1     0     0     44    no
+46   values          Variable    Array[ref=1]0     1     0     0     45    no
+
+Symbol Table - btab:
+idx  last    lpar    psze    vsze
+---------------------------------
+0    46      0       0       0
+1    40      0       0       0
+2    41      0       0       0
+3    42      0       0       0
+4    43      0       0       0
+
+Symbol Table - atab:
+idx  xtyp        etyp        eref  low   high  elsz  size
+-----------------------------------------------------------
+1    Subrange    Integer     0     1     3     1     3
+
+Intermediate Code:
+0 INT 0 6 ; alokasi frame program
+1 LIT 0 7 ; literal int 7
+2 LIT 0 3 ; array base addr (LValue)
+3 LIT 0 100000 ; literal int 100000
+4 LIT 0 1 ; array low (LValue)
+5 OPR 0 3 ; idx-low (LValue)
+6 OPR 0 2 ; abs addr (LValue)
+7 STO 0 -1 ; simpan ke var
+8 LIT 0 -1 ; string:Should not reach here
+9 OPR 0 14 ; writeln arg 0
+10 RET 0 0 ; akhir program
+
+Program Output:
+
+Runtime Status: FAILED
+Runtime Error:
+- Invalid memory access at address 100002 at instruction 7
