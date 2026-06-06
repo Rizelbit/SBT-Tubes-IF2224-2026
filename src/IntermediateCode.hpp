@@ -13,8 +13,7 @@ enum class OpCode {
     JMP,
     JPC,
     CAL,
-    RET,
-    HALT
+    RET
 };
 
 struct Instruction {

@@ -284,10 +284,6 @@ void Interpreter::executeInstruction(const Instruction& instr) {
             pc_ = oldPc;
             break;
         }
-        case OpCode::HALT: {
-            pc_ = static_cast<int>(code_.instructions().size()); // force exit
-            break;
-        }
         default: {
             errorMgr_.addError(RuntimeErrorType::InvalidInstruction,
                 "Unknown opcode", pc_ - 1);

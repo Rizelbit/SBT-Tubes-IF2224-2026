@@ -14,7 +14,6 @@ std::string opcodeToString(OpCode op) {
         case OpCode::JPC: return "JPC";
         case OpCode::CAL: return "CAL";
         case OpCode::RET: return "RET";
-        case OpCode::HALT: return "HALT";
     }
     return "???";
 }
