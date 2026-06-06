@@ -82,12 +82,6 @@ int main(int argc, char* argv[]) {
             out << "Input Mode: DECORATED AST\n";
             out << "Semantic Analysis: SKIPPED (Decorated AST input)\n\n";
 
-            out << "Decorated AST:\n";
-            ASTPrinter printer;
-            printer.print(decorated.root, out);
-            out << "\n";
-            decorated.symbolTable.printTables(out);
-
             generateAndRun(decorated.root, decorated.symbolTable, out);
             std::cout << "Pipeline complete. Check " << outputFile << "\n";
             return 0;
